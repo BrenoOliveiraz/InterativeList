@@ -3,6 +3,7 @@ import React from 'react'
 import { StyleSheet } from 'react-native'
 import Animated, { SharedValue } from 'react-native-reanimated'
 import Card, { CardProps } from '../Card/Card'
+import { GestureDetector } from 'react-native-gesture-handler'
 
 
 type Props = {
