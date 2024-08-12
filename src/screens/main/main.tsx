@@ -9,10 +9,10 @@ import MovableCard from '../../components/MovibleCard/MovableCard';
 export default function Main() {
 
   const scrollY = useSharedValue(0)
-  const cardsPosition = useSharedValue(listToObject((cards)))
+  const cardsPosition = useSharedValue(listToObject(cards))
 
   const handleScroll = useAnimatedScrollHandler((event) => {
-    scrollY.value = event.contentOffset.y
+    scrollY.value = event.contentOffset.y //contentOffset é para mostrar a posição da rolagem em Y (vertical)
   })
 
   function listToObject(list: typeof cards ) {
@@ -51,7 +51,8 @@ export default function Main() {
               data={item}
               scrollY={scrollY} 
               cardsPosition={cardsPosition}
-              cardsCount={cards.length}              
+              cardsCount={cards.length}
+              
               
               />
           ))}
@@ -77,6 +78,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginTop: 10,
     position: 'relative',
-    height: cards.length * 75
+    height: cards.length * 60
   },
 });

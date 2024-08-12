@@ -30,7 +30,19 @@ const cards = [
     },    {
         id: 8,
         title: 'Tecnologia',
-
+    },    {
+        id: 9,
+        title: 'Ciência',
+    },    {
+        id: 10,
+        title: 'Esportes',
+    },    {
+        id: 11,
+        title: 'Carreira',
+    },    {
+        id: 12,
+        title: 'Moda e Beleza',
+        
     },
 ]
 
