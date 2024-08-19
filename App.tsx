@@ -1,13 +1,13 @@
 import { NativeBaseProvider, StatusBar } from 'native-base';
-import Main from './src/screens/main/main';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Routes from './src/Routes';
 
 export default function App() {
   return (
     <NativeBaseProvider >
       <GestureHandlerRootView style={{flex: 1}}>
         <StatusBar barStyle='light-content' translucent backgroundColor='transparent' />
-        <Main />
+        <Routes />
 
       </GestureHandlerRootView>
     </NativeBaseProvider>
