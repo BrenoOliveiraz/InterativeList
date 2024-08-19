@@ -12,6 +12,8 @@ export default function Main() {
 
   //hook do animated pra atualizar o estado da rolagem
   const scrollY = useSharedValue(0)
+
+  //capturar na variavel o estado da rolagem
   const cardsPosition = useSharedValue(listToObject(cards))
 
 

@@ -23,7 +23,7 @@ export default function Card({ data }: Props) {
 
 export const HEIGHT = 68
 export const MARGIN_BOTTON = 12
-export const CARD_HEIGHT = HEIGHT - MARGIN_BOTTON 
+export const CARD_HEIGHT = HEIGHT + MARGIN_BOTTON 
 
 const styles = StyleSheet.create({
   card: {
