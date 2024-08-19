@@ -20,28 +20,32 @@ export default function Card({ data }: Props) {
   );
 }
 
+
+export const HEIGHT = 68
+export const MARGIN_BOTTON = 12
+export const CARD_HEIGHT = HEIGHT - MARGIN_BOTTON 
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     height: 60,
-    padding: 20 ,
-    
+    padding: 20,
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    width: '100%', // Garante que o card ocupe 100% da largura disponível
-    flexDirection: 'row', // Alinha os itens em uma linha
-    justifyContent: 'space-between', // Distribui espaço entre o texto e o ícone
-    alignItems: 'center', // Alinha os itens verticalmente no centro
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+   
+    
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    flex: 1, // Faz o texto ocupar o máximo de espaço disponível
-    
-
+    flex: 1,
   },
 });
