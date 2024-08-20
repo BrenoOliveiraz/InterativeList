@@ -89,3 +89,7 @@ export const styles = StyleSheet.create({
     height: cards.length * 60
   },
 });
+
+
+
+
