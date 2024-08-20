@@ -7,7 +7,7 @@ import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native
 import MovableCard from '../../components/MovibleCard/MovableCard';
 import { CARD_HEIGHT } from '../../components/Card/Card';
 
-export default function Main() {
+export default function List() {
 
 
   //hook do animated pra atualizar o estado da rolagem
