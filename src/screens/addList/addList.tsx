@@ -57,7 +57,6 @@ export default function AddList({ navigation }) {
                 />
             </Box>
 
-            {/* Campo para adicionar itens à lista */}
             <Box mt={4}>
                 <TextField
                     labelText="Adicionar Item"
@@ -70,7 +69,7 @@ export default function AddList({ navigation }) {
                 </Button>
             </Box>
 
-            {/* Exibição dos itens adicionados */}
+     
             <ScrollView mt={4} bg="gray.800" borderRadius="lg" p={4}>
                 {items.length > 0 ? (
                     items.map((item, index) => (
@@ -83,7 +82,7 @@ export default function AddList({ navigation }) {
                 )}
             </ScrollView>
 
-            {/* Botão para salvar a lista */}
+   
             <Box mt={8} w="100%">
                 <Button onPress={handleSaveList} bg="blue.800" w="100%" borderRadius="lg">
                     <Text style={{ color: 'white' }}>Salvar Lista</Text>

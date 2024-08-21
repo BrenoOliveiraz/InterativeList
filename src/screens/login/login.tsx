@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import Title from '../../components/header/Title';
 import TextField from '../../components/TextField/TextField';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../../Services/FirebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 type LoginProps = {
     navigation: {
