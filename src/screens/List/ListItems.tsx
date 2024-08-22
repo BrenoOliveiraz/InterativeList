@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { VStack, Box, Button, Text, Spinner, Pressable } from 'native-base';
+import { VStack, Box, Button, Text, Spinner, Pressable, Icon, HStack } from 'native-base';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../../Services/FirebaseConfig';
 import Title from '../../components/header/Title';
 import DraggableFlatList from 'react-native-draggable-flatlist';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function ListScreen() {
     const [items, setItems] = useState([]);
@@ -70,7 +71,24 @@ export default function ListScreen() {
 
     return (
         <VStack flex={1} p={5} bg="gray.900">
-            <Title color="white"> {listName}</Title>
+            <HStack alignItems='center'>
+                <Button
+                    onPress={() => navigation.navigate('EditList', { listName })}
+                    bg="green.500"
+                    borderRadius="md"
+                    w="20%" // Ajusta o tamanho do botão
+                    h={10}
+                    _text={{ color: 'white', fontSize: 'lg' }}
+                    leftIcon={
+                        <Icon
+                            as={<MaterialCommunityIcons name="file-document-edit-outline" />}
+                            size="lg"
+                            color="white"
+                        />
+                    }
+                ></Button>
+                <Title marginLeft={2} color="red.500"> {listName}</Title>
+            </HStack>
 
             {loading ? (
                 <VStack flex={1} justifyContent="center" alignItems="center">
@@ -83,7 +101,7 @@ export default function ListScreen() {
                         renderItem={renderItem}
                         keyExtractor={(item, index) => `draggable-item-${index}`}
                         onDragEnd={handleDragEnd}
-                        contentContainerStyle={{ padding: 4, paddingBottom: 50 }} 
+                        contentContainerStyle={{ padding: 4, paddingBottom: 50 }}
                     />
                 ) : (
                     <VStack flex={1} justifyContent="center" alignItems="center">
