@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-base';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../Services/FirebaseConfig';
 import Title from '../../components/header/Title';
 import DraggableFlatList from 'react-native-draggable-flatlist';
