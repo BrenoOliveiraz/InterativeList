@@ -102,6 +102,7 @@ export default function MainScreen() {
             justifyContent="space-between"
         >
             <Text
+                fontSize="xl"
                 color="white"
                 onLongPress={drag}
                 onPress={() => handleListPress(item.name)} // Navegar ao clicar
@@ -144,8 +145,8 @@ export default function MainScreen() {
                     onPress={handleAddList}
                     bg="green.500"
                     borderRadius="md"
-                    w="100%" // Ajuste o tamanho do botão conforme necessário
-                    h={12}  // Ajuste a altura do botão conforme necessário
+                    w="90%" // Ajusta o tamanho do botão
+                    h={12}
                     _text={{ color: 'white', fontSize: 'lg' }}
                     leftIcon={
                         <Icon
@@ -155,7 +156,7 @@ export default function MainScreen() {
                         />
                     }
                 >
-                    
+
                 </Button>
             </Box>
         </VStack>

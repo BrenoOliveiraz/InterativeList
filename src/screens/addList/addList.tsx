@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { VStack, Box, Button, Text, ScrollView } from 'native-base';
-import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
+import { VStack, Box, Button, Text, ScrollView, HStack, Input, Icon } from 'native-base';
+import { AddIcon, CloseIcon } from 'native-base';
 import { auth, db } from '../../Services/FirebaseConfig'; // Importação do Firebase e Firestore
 import Title from '../../components/header/Title';
-import TextField from '../../components/TextField/TextField';
+import { collection, addDoc } from 'firebase/firestore';
+import { MaterialIcons } from '@expo/vector-icons'; // Importa MaterialIcons
 
 export default function AddList({ navigation }) {
     // Estados para armazenar o nome da lista e os itens
@@ -17,6 +18,11 @@ export default function AddList({ navigation }) {
             setItems([...items, itemName]);
             setItemName(''); // Limpa o campo após adicionar
         }
+    };
+
+    // Função para remover um item da lista localmente
+    const handleRemoveItem = (index) => {
+        setItems(items.filter((_, i) => i !== index));
     };
 
     // Função para salvar a lista no Firestore
@@ -49,43 +55,100 @@ export default function AddList({ navigation }) {
 
             {/* Campo para o nome da lista */}
             <Box mt={4}>
-                <TextField
-                    labelText="Nome da Lista"
-                    placeHolderText="Insira o nome da lista"
+                <Input
+                    placeholder="Insira o nome da lista"
                     value={listName}
                     onChangeText={setListName}
+                    bg="gray.700"
+                    borderRadius="md"
+                    color="white"
+                    p={4}
+                    borderColor="gray.600"
+                    _focus={{
+                        borderColor: "blue.500",
+                        bg: "gray.800",
+                        shadow: 2
+                    }}
                 />
             </Box>
 
             <Box mt={4}>
-                <TextField
-                    labelText="Adicionar Item"
-                    placeHolderText="Insira o nome do item"
-                    value={itemName}
-                    onChangeText={setItemName}
-                />
-                <Button onPress={handleAddItem} bg="green.500" mt={2} borderRadius="lg">
-                    <Text style={{ color: 'white' }}>Adicionar Item</Text>
-                </Button>
+                <HStack alignItems="center">
+                    <Input
+                        flex={1} // Faz o campo de texto ocupar o máximo espaço disponível
+                        placeholder="Insira o nome do item"
+                        value={itemName}
+                        onChangeText={setItemName}
+                        bg="gray.700"
+                        borderRadius="md"
+                        color="white"
+                        p={4}
+                        borderColor="gray.600"
+                        mr={2} // Margem direita para separar do botão
+                        _focus={{
+                            borderColor: "blue.500",
+                            bg: "gray.800",
+                            shadow: 2
+                        }}
+                    />
+                    <Button
+                        onPress={handleAddItem}
+                        bg="green.500"
+                        borderRadius="md"
+                        p={2}
+                        height={12} // Ajusta a altura do botão para alinhar com o Input
+                        flexDirection="row"
+                        alignItems="center"
+                        justifyContent="center"
+                        _pressed={{
+                            bg: "green.600"
+                        }}
+                        shadow={2}
+                    >
+                        <Icon as={MaterialIcons} name="add" color="white" size="md" />
+                    </Button>
+                </HStack>
             </Box>
 
-     
-            <ScrollView mt={4} bg="gray.800" borderRadius="lg" p={4}>
+            <ScrollView mt={4} bg="gray.800" borderRadius="md" p={4} shadow={3}>
                 {items.length > 0 ? (
                     items.map((item, index) => (
-                        <Box key={index} mb={2} p={2} bg="gray.700" borderRadius="lg">
+                        <HStack key={index} mb={2} p={4} bg="gray.700" borderRadius="md" shadow={2} alignItems="center" justifyContent="space-between">
                             <Text color="white">{item}</Text>
-                        </Box>
+                            <Button
+                                onPress={() => handleRemoveItem(index)}
+                                bg="red.500"
+                                borderRadius="full"
+                                p={2}
+                                _pressed={{
+                                    bg: "red.700"
+                                }}
+                                shadow={2}
+                              
+
+
+                            >
+                                <CloseIcon color="white" size='sm' />
+                            </Button>
+                        </HStack>
                     ))
                 ) : (
                     <Text color="white">Nenhum item adicionado ainda.</Text>
                 )}
             </ScrollView>
 
-   
             <Box mt={8} w="100%">
-                <Button onPress={handleSaveList} bg="blue.800" w="100%" borderRadius="lg">
-                    <Text style={{ color: 'white' }}>Salvar Lista</Text>
+                <Button
+                    onPress={handleSaveList}
+                    bg="blue.800"
+                    w="100%"
+                    borderRadius="md"
+                    shadow={3}
+                    _pressed={{
+                        bg: "blue.900"
+                    }}
+                >
+                    <Text color="white">Salvar Lista</Text>
                 </Button>
             </Box>
         </VStack>

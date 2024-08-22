@@ -7,7 +7,7 @@ import Login from './screens/Login/login';
 import Main from './screens/Main/main';
 import FormRegister from './screens/Register/register';
 import AddList from './screens/AddList/addList';
-import ListScreen from './screens/List/List';
+import ListScreen from './screens/List/ListItems';
 
 
 

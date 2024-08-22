@@ -60,8 +60,10 @@ export default function ListScreen() {
 
     const renderItem = ({ item, index, drag }) => (
         <Pressable onLongPress={drag} key={index}>
-            <Box p={4} bg="gray.700" borderRadius="lg" mb={2} shadow={2}>
-                <Text color="white">{item}</Text>
+            <Box p={4} bg="gray.700" borderRadius="lg" mb={2} shadow={2} minHeight={50} justifyContent="center">
+                <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
+                    {item}
+                </Text>
             </Box>
         </Pressable>
     );
@@ -81,7 +83,7 @@ export default function ListScreen() {
                         renderItem={renderItem}
                         keyExtractor={(item, index) => `draggable-item-${index}`}
                         onDragEnd={handleDragEnd}
-                        contentContainerStyle={{ padding: 4 }}
+                        contentContainerStyle={{ padding: 4, paddingBottom: 50 }} 
                     />
                 ) : (
                     <VStack flex={1} justifyContent="center" alignItems="center">
