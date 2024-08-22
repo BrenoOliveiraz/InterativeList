@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { VStack, Box, Button, Text } from 'native-base';
+import { VStack, Box, Button, Text, Icon, IconButton, Alert } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../../Services/FirebaseConfig';
 import Title from '../../components/header/Title';
 import DraggableFlatList from 'react-native-draggable-flatlist';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Alert as RNAlert } from 'react-native';
 
 export default function MainScreen() {
     const [userLists, setUserLists] = useState([]);
     const navigation = useNavigation();
 
     // Função para buscar listas do Firestore
-    const fetchLists = (setUserLists) => {
+    const fetchLists = () => {
         const user = auth.currentUser;
         if (!user) return;
 
@@ -27,7 +29,7 @@ export default function MainScreen() {
     };
 
     useEffect(() => {
-        const unsubscribe = fetchLists(setUserLists);
+        const unsubscribe = fetchLists();
 
         return () => {
             if (typeof unsubscribe === 'function') {
@@ -42,7 +44,7 @@ export default function MainScreen() {
 
         const user = auth.currentUser;
         if (user && userLists.length > 0) {
-            const listId = userLists[0]?.id; // Considera a primeira lista como exemplo
+            const listId = data[0]?.id; // Considera a primeira lista como exemplo
             if (listId) {
                 const listRef = doc(db, 'users', user.uid, 'lists', listId);
                 await updateDoc(listRef, { items: data.map(item => item.name) }) // Ajuste conforme o formato dos dados
@@ -56,6 +58,36 @@ export default function MainScreen() {
         }
     };
 
+    // Função para remover um item da lista com confirmação
+    const handleRemoveItem = (itemId) => {
+        RNAlert.alert(
+            "Confirmar Remoção",
+            "Você realmente deseja remover este item?",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel"
+                },
+                {
+                    text: "Remover",
+                    onPress: async () => {
+                        const user = auth.currentUser;
+                        if (user) {
+                            const listRef = doc(db, 'users', user.uid, 'lists', itemId);
+                            await deleteDoc(listRef)
+                                .then(() => {
+                                    console.log('Item removido do Firestore');
+                                })
+                                .catch((error) => {
+                                    console.error('Erro ao remover o item do Firestore:', error);
+                                });
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
     // Função para renderizar cada item
     const renderItem = ({ item, index, drag }) => (
         <Box
@@ -65,6 +97,9 @@ export default function MainScreen() {
             borderRadius="lg"
             mb={2}
             shadow={2}
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
         >
             <Text
                 color="white"
@@ -73,6 +108,10 @@ export default function MainScreen() {
             >
                 {item.name}
             </Text>
+            <IconButton
+                icon={<MaterialCommunityIcons name="minus-circle" size={24} color="#943631" />}
+                onPress={() => handleRemoveItem(item.id)}
+            />
         </Box>
     );
 
@@ -100,9 +139,23 @@ export default function MainScreen() {
                     <Text color="white">Nenhuma lista salva ainda.</Text>
                 </VStack>
             )}
-            <Box mt={8} w="100%">
-                <Button onPress={handleAddList} bg="green.500" w="100%" borderRadius="lg">
-                    <Text color="white">Adicionar Nova Lista</Text>
+            <Box mt={5} w="100%" alignItems="center">
+                <Button
+                    onPress={handleAddList}
+                    bg="green.500"
+                    borderRadius="md"
+                    w="100%" // Ajuste o tamanho do botão conforme necessário
+                    h={12}  // Ajuste a altura do botão conforme necessário
+                    _text={{ color: 'white', fontSize: 'lg' }}
+                    leftIcon={
+                        <Icon
+                            as={<MaterialCommunityIcons name="plus" />}
+                            size="lg"
+                            color="white"
+                        />
+                    }
+                >
+                    
                 </Button>
             </Box>
         </VStack>
