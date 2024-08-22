@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { VStack, Box, Button, Text, Spinner, Pressable, Icon, HStack } from 'native-base';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-base';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../Services/FirebaseConfig';
 import Title from '../../components/header/Title';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -16,33 +16,35 @@ export default function ListScreen() {
 
     const { listName } = route.params;
 
-    useEffect(() => {
-        const fetchItems = async () => {
-            setLoading(true);
-            setError(null);
+    const fetchItems = async () => {
+        setLoading(true);
+        setError(null);
 
-            if (!listName) {
-                setError('Nome da lista inválido');
-                setLoading(false);
-                return;
-            }
+        if (!listName) {
+            setError('Nome da lista inválido');
+            setLoading(false);
+            return;
+        }
 
-            try {
-                const userListsRef = collection(db, 'users', auth.currentUser.uid, 'lists');
-                const q = query(userListsRef, where('name', '==', listName));
-                const querySnapshot = await getDocs(q);
-                const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setItems(fetchedLists);
-            } catch (error) {
-                console.error('Erro ao buscar listas: ', error);
-                setError('Erro ao buscar itens. Tente novamente mais tarde.');
-            } finally {
-                setLoading(false);
-            }
-        };
+        try {
+            const userListsRef = collection(db, 'users', auth.currentUser.uid, 'lists');
+            const q = query(userListsRef, where('name', '==', listName));
+            const querySnapshot = await getDocs(q);
+            const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setItems(fetchedLists);
+        } catch (error) {
+            console.error('Erro ao buscar listas: ', error);
+            setError('Erro ao buscar itens. Tente novamente mais tarde.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchItems();
-    }, [listName]);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchItems(); // Recarrega a lista ao voltar para a tela
+        }, [])
+    );
 
     const handleDragEnd = async ({ data }) => {
         setItems(prevItems => {
@@ -73,18 +75,14 @@ export default function ListScreen() {
         <VStack flex={1} p={5} bg="gray.900">
             <HStack alignItems='center'>
                 <Button
-                    onPress={() => navigation.navigate('EditList', { listName })}
+                    onPress={() => navigation.navigate('EditList', { listName, onUpdate: fetchItems })}
                     bg="green.500"
                     borderRadius="md"
-                    w="20%" // Ajusta o tamanho do botão
+                    w="20%"
                     h={10}
                     _text={{ color: 'white', fontSize: 'lg' }}
                     leftIcon={
-                        <Icon
-                            as={<MaterialCommunityIcons name="file-document-edit-outline" />}
-                            size="lg"
-                            color="white"
-                        />
+                        <MaterialCommunityIcons name="file-document-edit-outline" size={24} color="white" />
                     }
                 ></Button>
                 <Title marginLeft={2} color="red.500"> {listName}</Title>

@@ -11,14 +11,13 @@ export default function EditList() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [listId, setListId] = useState(null); // Adicione esta linha para armazenar o ID da lista
+    const [listId, setListId] = useState(null);
     const route = useRoute();
     const navigation = useNavigation();
 
-    const { listName } = route.params;
+    const { listName, onUpdate } = route.params; // Adicione onUpdate aqui
 
-    // Animação para os cards
-    const shakeAnimation = useRef(new Animated.Value(0)).current; // Valor inicial da animação
+    const shakeAnimation = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -38,8 +37,8 @@ export default function EditList() {
                 const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 if (fetchedLists.length > 0) {
-                    setItems(fetchedLists[0]?.items || []); // Ajusta para armazenar apenas os itens
-                    setListId(fetchedLists[0]?.id); // Armazena o ID da lista
+                    setItems(fetchedLists[0]?.items || []);
+                    setListId(fetchedLists[0]?.id);
                 }
             } catch (error) {
                 console.error('Erro ao buscar listas: ', error);
@@ -53,7 +52,6 @@ export default function EditList() {
     }, [listName]);
 
     useEffect(() => {
-        // Animação de chacoalhar quando os itens são carregados
         Animated.sequence([
             Animated.timing(shakeAnimation, {
                 toValue: -10,
@@ -116,10 +114,11 @@ export default function EditList() {
         setError(null);
 
         try {
-            // Atualiza o Firestore com a nova lista de itens
             const listRef = doc(db, 'users', auth.currentUser.uid, 'lists', listId);
             await updateDoc(listRef, { items });
             console.log('Alterações salvas no Firestore');
+            if (onUpdate) onUpdate(); // Chama a função de callback, se definida
+            navigation.goBack();
         } catch (error) {
             console.error('Erro ao salvar alterações no Firestore:', error);
             setError('Erro ao salvar alterações. Tente novamente mais tarde.');
@@ -172,11 +171,10 @@ export default function EditList() {
                     renderItem={renderItem}
                     keyExtractor={(item, index) => `draggable-item-${index}`}
                     onDragEnd={handleDragEnd}
-                    contentContainerStyle={{ padding: 4, paddingBottom: 80 }} // Ajuste o paddingBottom para acomodar o botão de salvar
+                    contentContainerStyle={{ padding: 4, paddingBottom: 80 }}
                 />
             )}
 
-            {/* Botão fixo no fundo */}
             <View style={styles.saveButtonContainer}>
                 <Button
                     onPress={handleSaveChanges}
@@ -200,10 +198,9 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         padding: 16,
-        backgroundColor: 'transparent', // Para não adicionar um fundo adicional
+        backgroundColor: 'transparent',
     },
     card: {
-        // Adiciona algum padding ou margem se necessário
         marginVertical: 5,
     },
 });
