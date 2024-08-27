@@ -124,9 +124,25 @@ export default function MainScreen() {
         navigation.navigate('ListScreen', { listName });
     };
 
+    const handleLogout = async () => {
+        try {
+            await auth.signOut();
+            navigation.navigate('Login'); // Navegar para a tela de login após logout
+        } catch (error) {
+            console.error('Logout falhou', error);
+        }
+    };
+
     return (
         <VStack flex={1} p={5} bg="gray.900">
-            <Title color="white">Minhas Listas</Title>
+            <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Title color="white">Minhas Listas</Title>
+                <IconButton
+                    icon={<MaterialCommunityIcons name="logout" size={24} color="white" />}
+                    onPress={handleLogout}
+                    _icon={{ color: 'white' }}
+                />
+            </Box>
             {userLists.length > 0 ? (
                 <DraggableFlatList
                     data={userLists}
@@ -155,9 +171,7 @@ export default function MainScreen() {
                             color="white"
                         />
                     }
-                >
-
-                </Button>
+                />
             </Box>
         </VStack>
     );
