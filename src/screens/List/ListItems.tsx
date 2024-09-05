@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { VStack, Box, Button, Text, Spinner, Pressable, HStack, Icon, CheckIcon } from 'native-base';
+import React, { useState, useEffect, useCallback } from 'react';
+import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-base';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../Services/FirebaseConfig';
@@ -42,9 +42,9 @@ export default function ListScreen() {
     };
 
     useFocusEffect(
-        React.useCallback(() => {
+        useCallback(() => {
             fetchItems(); // Recarrega a lista ao voltar para a tela
-        }, [])
+        }, [listName])
     );
 
     const handleDragEnd = async ({ data }) => {
@@ -62,13 +62,18 @@ export default function ListScreen() {
         });
     };
 
+    const handleCheckboxChange = (id, newState) => {
+        // Atualiza o estado do checkbox aqui se necessário
+        console.log(`Checkbox ${id} está ${newState ? 'marcado' : 'desmarcado'}`);
+    };
+
     const renderItem = ({ item, index, drag }) => (
         <Pressable onLongPress={drag} key={index}>
             <Box p={4} bg="gray.700" borderRadius="lg" mb={2} shadow={2} minHeight={50} justifyContent="center">
                 <HStack alignItems="center" space={3}>
-                    <Checkbox  />
+                    <Checkbox id={item.id} onChange={handleCheckboxChange} />
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
-                        {item}
+                        {item.name}
                     </Text>
                 </HStack>
             </Box>

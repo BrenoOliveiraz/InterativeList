@@ -1,12 +1,42 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CheckIcon } from 'native-base';
 
-export default function Checkbox() {
+const STORAGE_KEY_PREFIX = 'checkboxState_';
+
+const Checkbox = ({ id, onChange }) => {
     const [selected, setSelected] = useState(false);
 
-    const handlePress = () => {
-        setSelected(!selected);
+    useEffect(() => {
+        // Carregar o estado salvo quando o componente é montado
+        const loadState = async () => {
+            try {
+                const storedValue = await AsyncStorage.getItem(`${STORAGE_KEY_PREFIX}${id}`);
+                if (storedValue !== null) {
+                    setSelected(JSON.parse(storedValue));
+                }
+            } catch (error) {
+                console.error('Erro ao carregar o estado', error);
+            }
+        };
+
+        loadState();
+    }, [id]);
+
+    const handlePress = async () => {
+        const newState = !selected;
+        setSelected(newState);
+        
+        // Salvar o novo estado no AsyncStorage
+        try {
+            await AsyncStorage.setItem(`${STORAGE_KEY_PREFIX}${id}`, JSON.stringify(newState));
+            if (onChange) {
+                onChange(id, newState);
+            }
+        } catch (error) {
+            console.error('Erro ao salvar o estado', error);
+        }
     };
 
     return (
@@ -16,7 +46,7 @@ export default function Checkbox() {
             </TouchableOpacity>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -33,3 +63,5 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
 });
+
+export default Checkbox;

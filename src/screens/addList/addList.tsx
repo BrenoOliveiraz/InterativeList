@@ -15,14 +15,18 @@ export default function AddList({ navigation }) {
     // Função para adicionar um item à lista localmente
     const handleAddItem = () => {
         if (itemName.trim()) {
-            setItems([...items, itemName]);
+            const newItem = {
+                id: Date.now().toString(), // Gera um ID único usando timestamp
+                name: itemName
+            };
+            setItems([...items, newItem]);
             setItemName(''); // Limpa o campo após adicionar
         }
     };
 
     // Função para remover um item da lista localmente
-    const handleRemoveItem = (index) => {
-        setItems(items.filter((_, i) => i !== index));
+    const handleRemoveItem = (id) => {
+        setItems(items.filter(item => item.id !== id));
     };
 
     // Função para salvar a lista no Firestore
@@ -37,7 +41,7 @@ export default function AddList({ navigation }) {
             // Adiciona um novo documento à coleção de listas com o nome e os itens
             await addDoc(userListsRef, {
                 name: listName,
-                items: items,
+                items: items, // Salva os itens com a estrutura atualizada
                 sharedWith: [user.uid] // Adiciona o UID do usuário à lista de compartilhamento
             });
 
@@ -112,11 +116,11 @@ export default function AddList({ navigation }) {
 
             <ScrollView mt={4} bg="gray.800" borderRadius="md" p={4} shadow={3}>
                 {items.length > 0 ? (
-                    items.map((item, index) => (
-                        <HStack key={index} mb={2} p={4} bg="gray.700" borderRadius="md" shadow={2} alignItems="center" justifyContent="space-between">
-                            <Text color="white">{item}</Text>
+                    items.map((item) => (
+                        <HStack key={item.id} mb={2} p={4} bg="gray.700" borderRadius="md" shadow={2} alignItems="center" justifyContent="space-between">
+                            <Text color="white">{item.name}</Text>
                             <Button
-                                onPress={() => handleRemoveItem(index)}
+                                onPress={() => handleRemoveItem(item.id)}
                                 bg="red.500"
                                 borderRadius="full"
                                 p={2}
@@ -124,9 +128,6 @@ export default function AddList({ navigation }) {
                                     bg: "red.700"
                                 }}
                                 shadow={2}
-                              
-
-
                             >
                                 <CloseIcon color="white" size='sm' />
                             </Button>
