@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-base';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
@@ -32,7 +32,14 @@ export default function ListScreen() {
             const q = query(userListsRef, where('name', '==', listName));
             const querySnapshot = await getDocs(q);
             const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setItems(fetchedLists);
+            
+            // Adiciona o índice original ao carregar os itens
+            const itemsWithIndex = fetchedLists[0]?.items.map((item, index) => ({
+                ...item,
+                originalIndex: index
+            })) || [];
+            
+            setItems([{ ...fetchedLists[0], items: itemsWithIndex }]);
         } catch (error) {
             console.error('Erro ao buscar listas: ', error);
             setError('Erro ao buscar itens. Tente novamente mais tarde.');
@@ -64,15 +71,40 @@ export default function ListScreen() {
 
     const handleCheckboxChange = (id, newState) => {
         setItems(prevItems => {
-            return prevItems.map(item => {
-                if (item.items) {
-                    const updatedItems = item.items.map(subItem => 
-                        subItem.id === id ? { ...subItem, selected: newState } : subItem
-                    );
-                    return { ...item, items: updatedItems };
+            const updatedItems = [...prevItems];
+            const list = updatedItems[0]; // Assumindo que há apenas uma lista de itens
+
+            if (list?.items) {
+                const itemIndex = list.items.findIndex(item => item.id === id);
+
+                if (itemIndex > -1) {
+                    const item = list.items[itemIndex];
+                    
+                    // Atualiza o estado do item
+                    const updatedItem = { ...item, selected: newState };
+
+                    if (newState) {
+                        // Mova o item para o final da lista quando selecionado
+                        list.items = list.items.filter(item => item.id !== id);
+                        list.items.push(updatedItem);
+                    } else {
+                        // Volte o item para sua posição original
+                        list.items = list.items.filter(item => item.id !== id);
+                        list.items.splice(item.originalIndex, 0, updatedItem); // Insere na posição original
+                    }
+
+                    // Atualiza o estado da lista
+                    updatedItems[0] = list;
+
+                    // Atualiza o Firestore com a nova ordem
+                    if (list?.id) {
+                        const listRef = doc(db, 'users', auth.currentUser.uid, 'lists', list.id);
+                        updateDoc(listRef, { items: list.items })
+                            .catch(error => console.error('Erro ao atualizar ordem no Firestore:', error));
+                    }
                 }
-                return item;
-            });
+            }
+            return updatedItems;
         });
     };
 
