@@ -1,12 +1,12 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CheckIcon } from 'native-base';
 
 const STORAGE_KEY_PREFIX = 'checkboxState_';
 
-const Checkbox = ({ id, onChange }) => {
-    const [selected, setSelected] = useState(false);
+const Checkbox = ({ id, onChange, isChecked }) => {
+    const [selected, setSelected] = useState(isChecked || false);
 
     useEffect(() => {
         // Carregar o estado salvo quando o componente é montado

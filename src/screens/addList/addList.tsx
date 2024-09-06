@@ -11,6 +11,7 @@ export default function AddList({ navigation }) {
     const [listName, setListName] = useState('');
     const [itemName, setItemName] = useState('');
     const [items, setItems] = useState([]);
+    const [error, setError] = useState(''); // Adiciona estado para erros
 
     // Função para adicionar um item à lista localmente
     const handleAddItem = () => {
@@ -31,6 +32,15 @@ export default function AddList({ navigation }) {
 
     // Função para salvar a lista no Firestore
     const handleSaveList = async () => {
+        if (!listName.trim()) {
+            setError('O nome da lista não pode estar vazio.');
+            return;
+        }
+        if (items.length === 0) {
+            setError('A lista deve conter pelo menos um item.');
+            return;
+        }
+
         const user = auth.currentUser; // Obtém o usuário autenticado
         if (!user) return; // Verifica se há um usuário autenticado
 
@@ -49,6 +59,7 @@ export default function AddList({ navigation }) {
             navigation.goBack(); // Retorna à tela principal após salvar
         } catch (error) {
             console.error('Erro ao salvar lista: ', error);
+            setError('Erro ao salvar a lista. Tente novamente mais tarde.');
         }
     };
 
@@ -56,6 +67,13 @@ export default function AddList({ navigation }) {
         <VStack flex={1} p={5} bg="gray.900">
             {/* Título da tela */}
             <Title color="white">Adicionar Nova Lista</Title>
+
+            {/* Exibe mensagem de erro, se houver */}
+            {error ? (
+                <Box bg="red.500" p={3} borderRadius="md" mb={4}>
+                    <Text color="white">{error}</Text>
+                </Box>
+            ) : null}
 
             {/* Campo para o nome da lista */}
             <Box mt={4}>

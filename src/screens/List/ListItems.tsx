@@ -63,15 +63,33 @@ export default function ListScreen() {
     };
 
     const handleCheckboxChange = (id, newState) => {
-        // Atualiza o estado do checkbox aqui se necessário
-        console.log(`Checkbox ${id} está ${newState ? 'marcado' : 'desmarcado'}`);
+        setItems(prevItems => {
+            return prevItems.map(item => {
+                if (item.items) {
+                    const updatedItems = item.items.map(subItem => 
+                        subItem.id === id ? { ...subItem, selected: newState } : subItem
+                    );
+                    return { ...item, items: updatedItems };
+                }
+                return item;
+            });
+        });
     };
 
     const renderItem = ({ item, index, drag }) => (
         <Pressable onLongPress={drag} key={index}>
-            <Box p={4} bg="gray.700" borderRadius="lg" mb={2} shadow={2} minHeight={50} justifyContent="center">
+            <Box 
+                p={4} 
+                bg={item.selected ? "gray.600" : "gray.700"} // Alterar cor de fundo com base na seleção
+                borderRadius="lg" 
+                mb={2} 
+                shadow={2} 
+                minHeight={50} 
+                justifyContent="center"
+                opacity={item.selected ? 0.5 : 1} // Alterar opacidade com base na seleção
+            >
                 <HStack alignItems="center" space={3}>
-                    <Checkbox id={item.id} onChange={handleCheckboxChange} />
+                    <Checkbox id={item.id} onChange={handleCheckboxChange} isChecked={item.selected} />
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
                         {item.name}
                     </Text>
