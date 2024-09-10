@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { VStack, Box, Button, Text, Icon, IconButton, Alert } from 'native-base';
+import { VStack, Box, Button, Text, Icon, IconButton, Menu, Pressable } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../../Services/FirebaseConfig';
@@ -8,7 +8,7 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Alert as RNAlert } from 'react-native';
 
-export default function MainScreen() {
+export default function MyListsScreen() {
     const [userLists, setUserLists] = useState([]);
     const navigation = useNavigation();
 
@@ -58,11 +58,11 @@ export default function MainScreen() {
         }
     };
 
-    // Função para remover um item da lista com confirmação
+    // Função para remover uma lista com confirmação
     const handleRemoveItem = (itemId) => {
         RNAlert.alert(
             "Confirmar Remoção",
-            "Você realmente deseja remover este item?",
+            "Você realmente deseja remover esta lista?",
             [
                 {
                     text: "Cancelar",
@@ -76,16 +76,21 @@ export default function MainScreen() {
                             const listRef = doc(db, 'users', user.uid, 'lists', itemId);
                             await deleteDoc(listRef)
                                 .then(() => {
-                                    console.log('Item removido do Firestore');
+                                    console.log('Lista removida do Firestore');
                                 })
                                 .catch((error) => {
-                                    console.error('Erro ao remover o item do Firestore:', error);
+                                    console.error('Erro ao remover a lista do Firestore:', error);
                                 });
                         }
                     }
                 }
             ]
         );
+    };
+
+    // Função para exibir o menu de opções
+    const handleOpenMenu = (itemId) => {
+        navigation.navigate('ShareListScreen', { listId: itemId });
     };
 
     // Função para renderizar cada item
@@ -109,10 +114,22 @@ export default function MainScreen() {
             >
                 {item.name}
             </Text>
-            <IconButton
-                icon={<MaterialCommunityIcons name="minus-circle" size={24} color="#943631" />}
-                onPress={() => handleRemoveItem(item.id)}
-            />
+
+            <Menu
+                w="150"
+                trigger={(triggerProps) => (
+                    <Pressable {...triggerProps}>
+                        <Icon
+                            as={<MaterialCommunityIcons name="dots-vertical" />}
+                            size="lg"
+                            color="white"
+                        />
+                    </Pressable>
+                )}
+            >
+                <Menu.Item onPress={() => handleRemoveItem(item.id)}>Remover Lista</Menu.Item>
+                <Menu.Item onPress={() => handleOpenMenu(item.id)}>Compartilhar</Menu.Item>
+            </Menu>
         </Box>
     );
 
@@ -122,6 +139,10 @@ export default function MainScreen() {
 
     const handleListPress = (listName) => {
         navigation.navigate('ListScreen', { listName });
+    };
+
+    const handleSharedLists = () => {
+        navigation.navigate('SharedListsScreen');
     };
 
     const handleLogout = async () => {
@@ -172,6 +193,25 @@ export default function MainScreen() {
                         />
                     }
                 />
+            </Box>
+            <Box mt={2} w="100%" alignItems="center">
+                <Button
+                    onPress={handleSharedLists}
+                    bg="blue.500"
+                    borderRadius="md"
+                    w="90%" // Ajusta o tamanho do botão
+                    h={12}
+                    _text={{ color: 'white', fontSize: 'lg' }}
+                    leftIcon={
+                        <Icon
+                            as={<MaterialCommunityIcons name="share" />}
+                            size="lg"
+                            color="white"
+                        />
+                    }
+                >
+                    Listas Compartilhadas
+                </Button>
             </Box>
         </VStack>
     );

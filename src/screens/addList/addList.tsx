@@ -3,7 +3,7 @@ import { VStack, Box, Button, Text, ScrollView, HStack, Input, Icon } from 'nati
 import { AddIcon, CloseIcon } from 'native-base';
 import { auth, db } from '../../Services/FirebaseConfig'; // Importação do Firebase e Firestore
 import Title from '../../components/header/Title';
-import { collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc, collection } from 'firebase/firestore';
 import { MaterialIcons } from '@expo/vector-icons'; // Importa MaterialIcons
 
 export default function AddList({ navigation }) {
@@ -47,9 +47,13 @@ export default function AddList({ navigation }) {
         try {
             // Cria uma referência para a coleção de listas do usuário
             const userListsRef = collection(db, 'users', user.uid, 'lists');
+            
+            // Gera um ID único para a nova lista
+            const newListRef = doc(userListsRef);
 
-            // Adiciona um novo documento à coleção de listas com o nome e os itens
-            await addDoc(userListsRef, {
+            // Adiciona um novo documento à coleção de listas com o nome, itens e um ID único
+            await setDoc(newListRef, {
+                id: newListRef.id, // Adiciona o ID único da lista
                 name: listName,
                 items: items, // Salva os itens com a estrutura atualizada
                 sharedWith: [user.uid] // Adiciona o UID do usuário à lista de compartilhamento
