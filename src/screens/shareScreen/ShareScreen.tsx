@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { VStack, Box, Button, Text, Input } from 'native-base';
-import { doc, updateDoc } from 'firebase/firestore';
+import { VStack, Box, Button, Text, Input, Alert } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../Services/FirebaseConfig';
-import Title from '../../components/header/Title';
 
-export default function ShareListScreen({ route, navigation }) {
-    const { listId } = route.params;
+export default function ShareListScreen({ route }) {
+    const { listId } = route.params; // Obtendo o ID da lista a partir dos parâmetros da rota
     const [emailToShare, setEmailToShare] = useState('');
     const [error, setError] = useState('');
+    const navigation = useNavigation();
 
     const handleShare = async () => {
         if (!emailToShare.trim()) {
@@ -16,16 +17,29 @@ export default function ShareListScreen({ route, navigation }) {
         }
 
         const user = auth.currentUser;
-        if (!user) return;
+        if (!user) {
+            setError('Usuário não autenticado.');
+            return;
+        }
 
         try {
-            // Obter a lista que será compartilhada
+            // Obter a referência do documento da lista
             const listRef = doc(db, 'users', user.uid, 'lists', listId);
-            const listDoc = await listRef.get();
+
+            // Obter o documento da lista
+            const listDoc = await getDoc(listRef);
             const listData = listDoc.data();
 
             if (listData) {
+                // Verificar se 'sharedWith' é um array
+                if (!Array.isArray(listData.sharedWith)) {
+                    listData.sharedWith = [];
+                }
+
+                // Adicionar o email à lista de compartilhamento
                 const updatedSharedWith = [...listData.sharedWith, emailToShare.trim()];
+
+                // Atualizar o documento no Firestore
                 await updateDoc(listRef, { sharedWith: updatedSharedWith });
 
                 console.log('Lista compartilhada com sucesso!');
@@ -41,46 +55,36 @@ export default function ShareListScreen({ route, navigation }) {
 
     return (
         <VStack flex={1} p={5} bg="gray.900">
-            <Title color="white">Compartilhar Lista</Title>
-
+            <Box mb={4}>
+                <Text color="white" fontSize="xl">Compartilhar Lista</Text>
+            </Box>
+            <Input
+                placeholder="Digite o email para compartilhar"
+                value={emailToShare}
+                onChangeText={(text) => setEmailToShare(text)}
+                bg="white"
+                mb={4}
+                borderRadius="md"
+                p={3}
+                w="90%"
+                mx="auto"
+            />
+            <Button
+                onPress={handleShare}
+                bg="blue.500"
+                borderRadius="md"
+                w="90%"
+                h={12}
+                _text={{ color: 'white', fontSize: 'lg' }}
+            >
+                Compartilhar
+            </Button>
             {error ? (
-                <Box bg="red.500" p={3} borderRadius="md" mb={4}>
-                    <Text color="white">{error}</Text>
-                </Box>
+                <Alert mt={4} status="error">
+                    <Alert.Icon />
+                    <Text>{error}</Text>
+                </Alert>
             ) : null}
-
-            <Box mt={4}>
-                <Input
-                    placeholder="Insira o email para compartilhar"
-                    value={emailToShare}
-                    onChangeText={setEmailToShare}
-                    bg="gray.700"
-                    borderRadius="md"
-                    color="white"
-                    p={4}
-                    borderColor="gray.600"
-                    _focus={{
-                        borderColor: "blue.500",
-                        bg: "gray.800",
-                        shadow: 2
-                    }}
-                />
-            </Box>
-
-            <Box mt={8} w="100%">
-                <Button
-                    onPress={handleShare}
-                    bg="blue.800"
-                    w="100%"
-                    borderRadius="md"
-                    shadow={3}
-                    _pressed={{
-                        bg: "blue.900"
-                    }}
-                >
-                    <Text color="white">Compartilhar</Text>
-                </Button>
-            </Box>
         </VStack>
     );
 }

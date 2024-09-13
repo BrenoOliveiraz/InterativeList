@@ -17,7 +17,7 @@ export default function SharedListsScreen() {
         if (!user) return;
 
         const userListsRef = collection(db, 'users', user.uid, 'lists');
-        const q = query(userListsRef, where('sharedWith', 'array-contains', user.uid));
+        const q = query(userListsRef, where('sharedWith', 'array-contains', user.email)); // Atualizado para buscar por email
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const lists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
