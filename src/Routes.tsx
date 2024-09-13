@@ -12,6 +12,7 @@ import EditList from './screens/EditList/editList';
 import InitialScreen from './screens/InitialScreen/InitialScreen';
 import AuthContext from './Contexts/AuthContext';
 import SharedListsScreen from './screens/sharedListScreen/sharedListScreen';
+import ShareListScreen from './screens/shareScreen/ShareScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ export default function Routes() {
         {user ? (
           <>
             <Stack.Screen options={{ headerShown: false }} name="Main" component={MainScreen} />
+            <Stack.Screen options={{ headerShown: false }} name="ShareListScreen" component={ShareListScreen} />
             <Stack.Screen options={{ headerShown: false }} name="AddList" component={AddList} />
             <Stack.Screen options={{ headerShown: false }} name="ListScreen" component={ListScreen} />
             <Stack.Screen options={{ headerShown: false }} name="EditList" component={EditList} />

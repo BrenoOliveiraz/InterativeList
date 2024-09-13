@@ -7,30 +7,27 @@ import { doc, setDoc, collection } from 'firebase/firestore';
 import { MaterialIcons } from '@expo/vector-icons'; // Importa MaterialIcons
 
 export default function AddList({ navigation }) {
-    // Estados para armazenar o nome da lista e os itens
     const [listName, setListName] = useState('');
     const [itemName, setItemName] = useState('');
     const [items, setItems] = useState([]);
-    const [error, setError] = useState(''); // Adiciona estado para erros
+    const [error, setError] = useState('');
+    const [emailToShare, setEmailToShare] = useState(''); // Novo estado para o email opcional
 
-    // Função para adicionar um item à lista localmente
     const handleAddItem = () => {
         if (itemName.trim()) {
             const newItem = {
-                id: Date.now().toString(), // Gera um ID único usando timestamp
+                id: Date.now().toString(),
                 name: itemName
             };
             setItems([...items, newItem]);
-            setItemName(''); // Limpa o campo após adicionar
+            setItemName('');
         }
     };
 
-    // Função para remover um item da lista localmente
     const handleRemoveItem = (id) => {
         setItems(items.filter(item => item.id !== id));
     };
 
-    // Função para salvar a lista no Firestore
     const handleSaveList = async () => {
         if (!listName.trim()) {
             setError('O nome da lista não pode estar vazio.');
@@ -41,26 +38,22 @@ export default function AddList({ navigation }) {
             return;
         }
 
-        const user = auth.currentUser; // Obtém o usuário autenticado
-        if (!user) return; // Verifica se há um usuário autenticado
+        const user = auth.currentUser;
+        if (!user) return;
 
         try {
-            // Cria uma referência para a coleção de listas do usuário
             const userListsRef = collection(db, 'users', user.uid, 'lists');
-            
-            // Gera um ID único para a nova lista
             const newListRef = doc(userListsRef);
 
-            // Adiciona um novo documento à coleção de listas com o nome, itens e um ID único
             await setDoc(newListRef, {
-                id: newListRef.id, // Adiciona o ID único da lista
+                id: newListRef.id,
                 name: listName,
-                items: items, // Salva os itens com a estrutura atualizada
-                sharedWith: [user.uid] // Adiciona o UID do usuário à lista de compartilhamento
+                items: items,
+                sharedWith: emailToShare ? [user.email, emailToShare.trim()] : [user.email] // Compartilha com o email do usuário e o opcional
             });
 
             console.log('Lista salva com sucesso!');
-            navigation.goBack(); // Retorna à tela principal após salvar
+            navigation.goBack();
         } catch (error) {
             console.error('Erro ao salvar lista: ', error);
             setError('Erro ao salvar a lista. Tente novamente mais tarde.');
@@ -69,17 +62,14 @@ export default function AddList({ navigation }) {
 
     return (
         <VStack flex={1} p={5} bg="gray.900">
-            {/* Título da tela */}
             <Title color="white">Adicionar Nova Lista</Title>
 
-            {/* Exibe mensagem de erro, se houver */}
             {error ? (
                 <Box bg="red.500" p={3} borderRadius="md" mb={4}>
                     <Text color="white">{error}</Text>
                 </Box>
             ) : null}
 
-            {/* Campo para o nome da lista */}
             <Box mt={4}>
                 <Input
                     placeholder="Insira o nome da lista"
@@ -99,9 +89,27 @@ export default function AddList({ navigation }) {
             </Box>
 
             <Box mt={4}>
+                <Input
+                    placeholder="Insira o email opcional para compartilhar"
+                    value={emailToShare}
+                    onChangeText={setEmailToShare}
+                    bg="gray.700"
+                    borderRadius="md"
+                    color="white"
+                    p={4}
+                    borderColor="gray.600"
+                    _focus={{
+                        borderColor: "blue.500",
+                        bg: "gray.800",
+                        shadow: 2
+                    }}
+                />
+            </Box>
+
+            <Box mt={4}>
                 <HStack alignItems="center">
                     <Input
-                        flex={1} // Faz o campo de texto ocupar o máximo espaço disponível
+                        flex={1}
                         placeholder="Insira o nome do item"
                         value={itemName}
                         onChangeText={setItemName}
@@ -110,7 +118,7 @@ export default function AddList({ navigation }) {
                         color="white"
                         p={4}
                         borderColor="gray.600"
-                        mr={2} // Margem direita para separar do botão
+                        mr={2}
                         _focus={{
                             borderColor: "blue.500",
                             bg: "gray.800",
@@ -122,7 +130,7 @@ export default function AddList({ navigation }) {
                         bg="green.500"
                         borderRadius="md"
                         p={2}
-                        height={12} // Ajusta a altura do botão para alinhar com o Input
+                        height={12}
                         flexDirection="row"
                         alignItems="center"
                         justifyContent="center"
@@ -177,3 +185,4 @@ export default function AddList({ navigation }) {
         </VStack>
     );
 }
+
