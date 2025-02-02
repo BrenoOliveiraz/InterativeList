@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { VStack, Box, Button, Text, ScrollView, HStack, Input, Icon } from 'native-base';
 import { AddIcon, CloseIcon } from 'native-base';
-import { auth, db } from '../../Services/FirebaseConfig'; // Importação do Firebase e Firestore
+import { auth, db } from '../../Services/FirebaseConfig';
 import Title from '../../components/header/Title';
 import { doc, setDoc, collection } from 'firebase/firestore';
-import { MaterialIcons } from '@expo/vector-icons'; // Importa MaterialIcons
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function AddList({ navigation }) {
     const [listName, setListName] = useState('');
     const [itemName, setItemName] = useState('');
     const [items, setItems] = useState([]);
     const [error, setError] = useState('');
-    const [emailToShare, setEmailToShare] = useState(''); // Novo estado para o email opcional
+    const [emailToShare, setEmailToShare] = useState('');
 
     const handleAddItem = () => {
         if (itemName.trim()) {
@@ -49,7 +49,7 @@ export default function AddList({ navigation }) {
                 id: newListRef.id,
                 name: listName,
                 items: items,
-                sharedWith: emailToShare ? [user.email, emailToShare.trim()] : [user.email] // Compartilha com o email do usuário e o opcional
+                sharedWith: emailToShare ? [user.email, emailToShare.trim()] : [user.email]
             });
 
             console.log('Lista salva com sucesso!');
@@ -63,12 +63,6 @@ export default function AddList({ navigation }) {
     return (
         <VStack flex={1} p={5} bg="gray.900">
             <Title color="white">Adicionar Nova Lista</Title>
-
-            {error ? (
-                <Box bg="red.500" p={3} borderRadius="md" mb={4}>
-                    <Text color="white">{error}</Text>
-                </Box>
-            ) : null}
 
             <Box mt={4}>
                 <Input

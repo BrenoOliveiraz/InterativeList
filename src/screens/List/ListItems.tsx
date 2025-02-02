@@ -21,12 +21,6 @@ export default function ListScreen() {
         setLoading(true);
         setError(null);
 
-        if (!listName) {
-            setError('Nome da lista inválido');
-            setLoading(false);
-            return;
-        }
-
         try {
             const userListsRef = collection(db, 'users', auth.currentUser.uid, 'lists');
             const q = query(userListsRef, where('name', '==', listName));
@@ -50,7 +44,7 @@ export default function ListScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            fetchItems(); // Recarrega a lista ao voltar para a tela
+            fetchItems(); 
         }, [listName])
     );
 
@@ -72,7 +66,7 @@ export default function ListScreen() {
     const handleCheckboxChange = (id, newState) => {
         setItems(prevItems => {
             const updatedItems = [...prevItems];
-            const list = updatedItems[0]; // Assumindo que há apenas uma lista de itens
+            const list = updatedItems[0]; 
 
             if (list?.items) {
                 const itemIndex = list.items.findIndex(item => item.id === id);
@@ -80,20 +74,20 @@ export default function ListScreen() {
                 if (itemIndex > -1) {
                     const item = list.items[itemIndex];
                     
-                    // Atualiza o estado do item
+              
                     const updatedItem = { ...item, selected: newState };
 
                     if (newState) {
-                        // Mova o item para o final da lista quando selecionado
+                      
                         list.items = list.items.filter(item => item.id !== id);
                         list.items.push(updatedItem);
                     } else {
-                        // Volte o item para sua posição original
+                      
                         list.items = list.items.filter(item => item.id !== id);
-                        list.items.splice(item.originalIndex, 0, updatedItem); // Insere na posição original
+                        list.items.splice(item.originalIndex, 0, updatedItem); 
                     }
 
-                    // Atualiza o estado da lista
+                
                     updatedItems[0] = list;
 
                     // Atualiza o Firestore com a nova ordem
@@ -112,13 +106,13 @@ export default function ListScreen() {
         <Pressable onLongPress={drag} key={index}>
             <Box 
                 p={4} 
-                bg={item.selected ? "gray.600" : "gray.700"} // Alterar cor de fundo com base na seleção
+                bg={item.selected ? "gray.600" : "gray.700"}
                 borderRadius="lg" 
                 mb={2} 
                 shadow={2} 
                 minHeight={50} 
                 justifyContent="center"
-                opacity={item.selected ? 0.5 : 1} // Alterar opacidade com base na seleção
+                opacity={item.selected ? 0.5 : 1} 
             >
                 <HStack alignItems="center" space={3}>
                     <Checkbox id={item.id} onChange={handleCheckboxChange} isChecked={item.selected} />

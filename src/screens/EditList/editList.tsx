@@ -8,16 +8,16 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Alert as RNAlert, StyleSheet, View, Animated } from 'react-native';
 
 export default function EditList() {
-    const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [listId, setListId] = useState(null);
+    const [items, setItems] = useState([]); // Estado para os itens da lista
+    const [loading, setLoading] = useState(true); // Estado de carregamento
+    const [error, setError] = useState(null); // Estado para gerenciar erros
+    const [listId, setListId] = useState(null); // Estado para o ID da lista
     const route = useRoute();
     const navigation = useNavigation();
 
-    const { listName, onUpdate } = route.params; // Adicione onUpdate aqui
+    const { listName, onUpdate } = route.params; // Obtendo parâmetros da rota
 
-    const shakeAnimation = useRef(new Animated.Value(0)).current;
+    const shakeAnimation = useRef(new Animated.Value(0)).current; // Animação de shake
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -37,6 +37,7 @@ export default function EditList() {
                 const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 if (fetchedLists.length > 0) {
+                    // Supondo que 'items' seja um array de objetos que possuem uma propriedade 'name'
                     setItems(fetchedLists[0]?.items || []);
                     setListId(fetchedLists[0]?.id);
                 }
@@ -52,6 +53,7 @@ export default function EditList() {
     }, [listName]);
 
     useEffect(() => {
+        // Animação de shake
         Animated.sequence([
             Animated.timing(shakeAnimation, {
                 toValue: -10,
@@ -82,7 +84,7 @@ export default function EditList() {
     }, [items]);
 
     const handleDragEnd = async ({ data }) => {
-        setItems(data);
+        setItems(data); // Atualiza a lista após arrastar
     };
 
     const handleRemoveItem = (itemToRemove) => {
@@ -97,7 +99,7 @@ export default function EditList() {
                 {
                     text: "Remover",
                     onPress: () => {
-                        setItems(prevItems => prevItems.filter(item => item !== itemToRemove));
+                        setItems(prevItems => prevItems.filter(item => item.id !== itemToRemove.id)); // Filtra pelo ID do item
                     }
                 }
             ]
@@ -128,7 +130,7 @@ export default function EditList() {
     };
 
     const renderItem = ({ item, index, drag }) => (
-        <Pressable onLongPress={drag} key={index}>
+        <Pressable onLongPress={drag} key={item.id}> {/* Use 'item.id' como chave */}
             <Animated.View style={[styles.card, { transform: [{ translateX: shakeAnimation }] }]}>
                 <Box
                     p={4}
@@ -142,11 +144,11 @@ export default function EditList() {
                     justifyContent="space-between"
                 >
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
-                        {item}
+                        {item.name} {/* Acesse a propriedade 'name' do objeto */}
                     </Text>
                     <IconButton
                         icon={<MaterialCommunityIcons name="minus-circle" size={24} color="#943631" />}
-                        onPress={() => handleRemoveItem(item)}
+                        onPress={() => handleRemoveItem(item)} // Chama a função para remover o item
                     />
                 </Box>
             </Animated.View>
@@ -169,7 +171,7 @@ export default function EditList() {
                 <DraggableFlatList
                     data={items}
                     renderItem={renderItem}
-                    keyExtractor={(item, index) => `draggable-item-${index}`}
+                    keyExtractor={(item) => item.id} // Use 'item.id' como chave
                     onDragEnd={handleDragEnd}
                     contentContainerStyle={{ padding: 4, paddingBottom: 80 }}
                 />

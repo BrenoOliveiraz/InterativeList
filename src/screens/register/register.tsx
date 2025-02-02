@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, Box, Button } from 'native-base';
 import {sessions} from '../../utils/textInputs'
-import {  setDoc, doc } from "firebase/firestore";
-import { Text } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../../Services/FirebaseConfig'
-import Title from '../../components/header/Title';
-import TextField from '../../components/TextField/TextField';
+
 
 type LoginProps = {
     navigation: {

@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      // O token é opcional aqui se você já estiver persistindo o estado com AsyncStorage
       const token = await user.getIdToken();
       await AsyncStorage.setItem('userToken', token);
       setUser(user);
