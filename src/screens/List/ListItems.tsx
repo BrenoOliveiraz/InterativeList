@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-base';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '../../Services/FirebaseConfig';
-import Title from '../../components/header/Title';
-import DraggableFlatList from 'react-native-draggable-flatlist';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 import Checkbox from '../../components/CheckBox/Checkbox';
+import Title from '../../components/header/Title';
+import { fetchItems, updateItemOrder, handleCheckboxChange } from '../../Services/Api';
 
 export default function ListScreen() {
     const [items, setItems] = useState([]);
@@ -14,93 +13,15 @@ export default function ListScreen() {
     const [error, setError] = useState(null);
     const route = useRoute();
     const navigation = useNavigation();
-
     const { listName } = route.params;
-
-    const fetchItems = async () => {
-        setLoading(true);
-        setError(null);
-
-        try {
-            const userListsRef = collection(db, 'users', auth.currentUser.uid, 'lists');
-            const q = query(userListsRef, where('name', '==', listName));
-            const querySnapshot = await getDocs(q);
-            const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            
-            // Adiciona o índice original ao carregar os itens
-            const itemsWithIndex = fetchedLists[0]?.items.map((item, index) => ({
-                ...item,
-                originalIndex: index
-            })) || [];
-            
-            setItems([{ ...fetchedLists[0], items: itemsWithIndex }]);
-        } catch (error) {
-            console.error('Erro ao buscar listas: ', error);
-            setError('Erro ao buscar itens. Tente novamente mais tarde.');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useFocusEffect(
         useCallback(() => {
-            fetchItems(); 
+            fetchItems(listName, setItems, setLoading, setError);
         }, [listName])
     );
 
-    const handleDragEnd = async ({ data }) => {
-        setItems(prevItems => {
-            const updatedItems = [...prevItems];
-            updatedItems[0].items = data;
-
-            if (updatedItems[0]?.id) {
-                const listRef = doc(db, 'users', auth.currentUser.uid, 'lists', updatedItems[0].id);
-                updateDoc(listRef, { items: data })
-                    .catch(error => console.error('Erro ao atualizar ordem no Firestore:', error));
-            }
-
-            return updatedItems;
-        });
-    };
-
-    const handleCheckboxChange = (id, newState) => {
-        setItems(prevItems => {
-            const updatedItems = [...prevItems];
-            const list = updatedItems[0]; 
-
-            if (list?.items) {
-                const itemIndex = list.items.findIndex(item => item.id === id);
-
-                if (itemIndex > -1) {
-                    const item = list.items[itemIndex];
-                    
-              
-                    const updatedItem = { ...item, selected: newState };
-
-                    if (newState) {
-                      
-                        list.items = list.items.filter(item => item.id !== id);
-                        list.items.push(updatedItem);
-                    } else {
-                      
-                        list.items = list.items.filter(item => item.id !== id);
-                        list.items.splice(item.originalIndex, 0, updatedItem); 
-                    }
-
-                
-                    updatedItems[0] = list;
-
-                    // Atualiza o Firestore com a nova ordem
-                    if (list?.id) {
-                        const listRef = doc(db, 'users', auth.currentUser.uid, 'lists', list.id);
-                        updateDoc(listRef, { items: list.items })
-                            .catch(error => console.error('Erro ao atualizar ordem no Firestore:', error));
-                    }
-                }
-            }
-            return updatedItems;
-        });
-    };
+    const handleDragEnd = ({ data }) => updateItemOrder(data, setItems);
 
     const renderItem = ({ item, index, drag }) => (
         <Pressable onLongPress={drag} key={index}>
@@ -115,7 +36,7 @@ export default function ListScreen() {
                 opacity={item.selected ? 0.5 : 1} 
             >
                 <HStack alignItems="center" space={3}>
-                    <Checkbox id={item.id} onChange={handleCheckboxChange} isChecked={item.selected} />
+                    <Checkbox id={item.id} onChange={(id, state) => handleCheckboxChange(id, state, setItems)} isChecked={item.selected} />
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
                         {item.name}
                     </Text>
@@ -128,16 +49,14 @@ export default function ListScreen() {
         <VStack flex={1} p={5} bg="gray.900">
             <HStack alignItems='center'>
                 <Button
-                    onPress={() => navigation.navigate('EditList', { listName, onUpdate: fetchItems })}
+                    onPress={() => navigation.navigate('EditList', { listName, onUpdate: () => fetchItems(listName, setItems, setLoading, setError) })}
                     bg="green.500"
                     borderRadius="md"
                     w="20%"
                     h={10}
                     _text={{ color: 'white', fontSize: 'lg' }}
-                    leftIcon={
-                        <MaterialCommunityIcons name="file-document-edit-outline" size={24} color="white" />
-                    }
-                ></Button>
+                    leftIcon={<MaterialCommunityIcons name="file-document-edit-outline" size={24} color="white" />}
+                />
                 <Title marginLeft={2} color="red.500"> {listName}</Title>
             </HStack>
 

@@ -24,7 +24,7 @@ export default function Routes() {
       <Stack.Navigator>
         {user ? (
           <>
-            <Stack.Screen options={{ headerShown: false }} name="Main" component={MainScreen} />
+            <Stack.Screen options={{ headerShown: false }} name="MainScreen" component={MainScreen} />
             <Stack.Screen options={{ headerShown: false }} name="ShareListScreen" component={ShareListScreen} />
             <Stack.Screen options={{ headerShown: false }} name="AddList" component={AddList} />
             <Stack.Screen options={{ headerShown: false }} name="ListScreen" component={ListScreen} />

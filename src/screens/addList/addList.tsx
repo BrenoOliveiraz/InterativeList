@@ -5,6 +5,7 @@ import { auth, db } from '../../Services/FirebaseConfig';
 import Title from '../../components/header/Title';
 import { doc, setDoc, collection } from 'firebase/firestore';
 import { MaterialIcons } from '@expo/vector-icons';
+import { handleSaveList } from '../../Services/Api';
 
 export default function AddList({ navigation }) {
     const [listName, setListName] = useState('');
@@ -28,37 +29,6 @@ export default function AddList({ navigation }) {
         setItems(items.filter(item => item.id !== id));
     };
 
-    const handleSaveList = async () => {
-        if (!listName.trim()) {
-            setError('O nome da lista não pode estar vazio.');
-            return;
-        }
-        if (items.length === 0) {
-            setError('A lista deve conter pelo menos um item.');
-            return;
-        }
-
-        const user = auth.currentUser;
-        if (!user) return;
-
-        try {
-            const userListsRef = collection(db, 'users', user.uid, 'lists');
-            const newListRef = doc(userListsRef);
-
-            await setDoc(newListRef, {
-                id: newListRef.id,
-                name: listName,
-                items: items,
-                sharedWith: emailToShare ? [user.email, emailToShare.trim()] : [user.email]
-            });
-
-            console.log('Lista salva com sucesso!');
-            navigation.goBack();
-        } catch (error) {
-            console.error('Erro ao salvar lista: ', error);
-            setError('Erro ao salvar a lista. Tente novamente mais tarde.');
-        }
-    };
 
     return (
         <VStack flex={1} p={5} bg="gray.900">
@@ -164,7 +134,7 @@ export default function AddList({ navigation }) {
 
             <Box mt={8} w="100%">
                 <Button
-                    onPress={handleSaveList}
+                    onPress={() => handleSaveList(listName, items, emailToShare, navigation)}
                     bg="blue.800"
                     w="100%"
                     borderRadius="md"
@@ -175,6 +145,7 @@ export default function AddList({ navigation }) {
                 >
                     <Text color="white">Salvar Lista</Text>
                 </Button>
+
             </Box>
         </VStack>
     );

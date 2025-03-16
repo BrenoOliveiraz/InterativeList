@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { ScrollView, Box, Button } from 'native-base';
+import { ScrollView, Box, Button, Text } from 'native-base';
 import {sessions} from '../../utils/textInputs'
+import Title from '../../components/header/Title';
+import TextField from '../../components/TextField/TextField';
+import { handleRegistration } from '../../Services/Api';
 
 
 type LoginProps = {
@@ -22,7 +25,7 @@ export default function FormRegister({ navigation }: LoginProps) {
         if (numSession < sessions.length - 1) {
             setNumSession(numSession + 1);
         } else {
-            handleRegistration();
+            handleRegistration(formData, navigation);
         }
     }
 
@@ -32,29 +35,7 @@ export default function FormRegister({ navigation }: LoginProps) {
         }
     }
 
-    async function handleRegistration() {
-        try {
-            // Criar o usuário no sistema de autenticação do Firebase
-            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.senha);
-            const user = userCredential.user;
-            console.log('Usuário criado:', user.uid);
 
-            // Salvar os dados do usuário no Firestore usando o uid como ID do documento
-            await setDoc(doc(db, "users", user.uid), {
-                uid: user.uid,
-                nome: formData.nome,
-                email: formData.email,
-  
-            });
-
-            console.log('Dados do usuário salvos no Firestore!');
-            
-            // Navegar para a próxima tela após o registro
-            navigation.navigate("Main");
-        } catch (error) {
-            console.error('Erro ao criar usuário: ', error);
-        }
-    }
 
     function handleChange(text, label) {
         setFormData({ ...formData, [label.toLowerCase()]: text });
@@ -74,7 +55,7 @@ export default function FormRegister({ navigation }: LoginProps) {
                         labelText={input.label}
                         secureTextEntry={input.secureTextEntry}
                         onChangeText={(text) => handleChange(text, input.label)}
-                        inputProps={{ color: 'white', bg: 'gray.800' }}
+                     
                     />
                 ))}
             </Box>
