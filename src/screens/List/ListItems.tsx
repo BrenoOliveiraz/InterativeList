@@ -27,7 +27,7 @@ export default function ListScreen() {
         <Pressable onLongPress={drag} key={index}>
             <Box 
                 p={4} 
-                bg={item.selected ? "gray.600" : "gray.700"}
+                bg={item.selected ? "green.400" : "gray.700"}
                 borderRadius="lg" 
                 mb={2} 
                 shadow={2} 
