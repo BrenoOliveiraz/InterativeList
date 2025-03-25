@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { VStack, Box, Button, Text, Icon, IconButton, CloseIcon } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { collection, query, where, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
-import { auth, db } from '../../Services/FirebaseConfig';
-import Title from '../../components/header/Title';
+import { auth, db } from '../Services/FirebaseConfig';
+import Title from '../components/header/Title';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Alert as RNAlert } from 'react-native';
 

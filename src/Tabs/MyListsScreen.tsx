@@ -4,10 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { Alert as RNAlert } from 'react-native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { fetchUserLists, handleUpdateListOrder, handleRemoveList } from '../../Services/Api'; // Importando as funções
+import { fetchUserLists, handleUpdateListOrder, handleRemoveList } from '../Services/Api'; // Importando as funções
 
-import { auth } from '../../Services/FirebaseConfig';
-import Title from '../../components/header/Title';
+import { auth } from '../Services/FirebaseConfig';
+import Title from '../components/header/Title';
 
 export default function MyListsScreen() {
     const [userLists, setUserLists] = useState([]);

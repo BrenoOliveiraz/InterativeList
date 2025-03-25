@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { VStack, Box, Button, Text, Spinner, Pressable, Icon, HStack, IconButton } from 'native-base';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { auth, db } from '../../Services/FirebaseConfig';
+import { auth, db } from '../Services/FirebaseConfig';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Alert as RNAlert, StyleSheet, View, Animated } from 'react-native';

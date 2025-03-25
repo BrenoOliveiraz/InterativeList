@@ -3,9 +3,9 @@ import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-ba
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import Checkbox from '../../components/CheckBox/Checkbox';
-import Title from '../../components/header/Title';
-import { fetchItems, updateItemOrder, handleCheckboxChange } from '../../Services/Api';
+import Checkbox from '../components/CheckBox/Checkbox';
+import Title from '../components/header/Title';
+import { fetchItems, updateItemOrder, handleCheckboxChange } from '../Services/Api';
 
 export default function ListScreen() {
     const [items, setItems] = useState([]);

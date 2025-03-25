@@ -2,9 +2,9 @@
 import React, { useState, useContext } from 'react';
 import { Box, Button, Link, VStack, Text } from 'native-base';
 import { TouchableOpacity } from 'react-native';
-import Title from '../../components/header/Title';
-import TextField from '../../components/TextField/TextField';
-import AuthContext from '../../Contexts/AuthContext';
+import Title from '../components/header/Title';
+import TextField from '../components/TextField/TextField';
+import AuthContext from '../Contexts/AuthContext';
 
 
 export default function Login({ navigation }) {
@@ -15,7 +15,7 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     try {
       await login(email, password);
-      navigation.navigate('Main');
+      navigation.navigate('Tabs');
     } catch (error) {
       console.error('Erro ao fazer login:', error.message);
     }
