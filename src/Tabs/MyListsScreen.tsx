@@ -143,25 +143,7 @@ export default function MyListsScreen() {
                     }
                 />
             </Box>
-            <Box mt={2} w="100%" alignItems="center">
-                <Button
-                    onPress={handleSharedLists}
-                    bg="blue.500"
-                    borderRadius="md"
-                    w="90%" 
-                    h={12}
-                    _text={{ color: 'white', fontSize: 'lg' }}
-                    leftIcon={
-                        <Icon
-                            as={<MaterialCommunityIcons name="share" />}
-                            size="lg"
-                            color="white"
-                        />
-                    }
-                >
-                    Listas Compartilhadas
-                </Button>
-            </Box>
+
         </VStack>
     );
 }
