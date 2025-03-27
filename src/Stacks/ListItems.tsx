@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-base';
+import { VStack, Box, Button, Text, Spinner, Pressable, HStack, Input } from 'native-base';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Checkbox from '../components/CheckBox/Checkbox';
 import Title from '../components/header/Title';
-import { fetchItems, updateItemOrder, handleCheckboxChange } from '../Services/Api';
+import { fetchItems, updateItemOrder, handleCheckboxChange, handlePriceChange } from '../Services/Api';
+import Prices from '../components/Price/Price';
 
 export default function ListScreen() {
     const [items, setItems] = useState([]);
@@ -25,21 +26,31 @@ export default function ListScreen() {
 
     const renderItem = ({ item, index, drag }) => (
         <Pressable onLongPress={drag} key={index}>
-            <Box 
-                p={4} 
+            <Box
+                p={4}
                 bg={item.selected ? "green.400" : "gray.700"}
-                borderRadius="lg" 
-                mb={2} 
-                shadow={2} 
-                minHeight={50} 
+                borderRadius="lg"
+                mb={2}
+                shadow={2}
+                minHeight={50}
                 justifyContent="center"
-                opacity={item.selected ? 0.5 : 1} 
+                opacity={item.selected ? 0.5 : 1}
             >
-                <HStack alignItems="center" space={3}>
+                <HStack alignItems="center" justifyContent="space-between" space={3}>
                     <Checkbox id={item.id} onChange={(id, state) => handleCheckboxChange(id, state, setItems)} isChecked={item.selected} />
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
                         {item.name}
                     </Text>
+                    <Prices
+                        id={item.id}
+                        initialPrice={item.price || 0}
+                        onChange={(id, newPrice) => handlePriceChange(id, newPrice, setItems)}
+                    />
+
+
+
+
+
                 </HStack>
             </Box>
         </Pressable>

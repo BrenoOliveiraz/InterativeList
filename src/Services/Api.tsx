@@ -45,7 +45,7 @@ export async function handleSaveList(listName: string, items: any[], emailToShar
     if (!user) return;
 
     try {
-        const userListsRef = collection(db, "users", user.uid, "lists");
+        const userListsRef = collection(db, "lists");
         const newListRef = doc(userListsRef);
 
         await setDoc(newListRef, {
@@ -62,14 +62,14 @@ export async function handleSaveList(listName: string, items: any[], emailToShar
     }
 }
 
-
 export function fetchUserLists(setUserLists) {
     const user = auth.currentUser;
     if (!user) return;
 
-    const userListsRef = collection(db, 'users', user.uid, 'lists');
-    
-    const unsubscribe = onSnapshot(userListsRef, (snapshot) => {
+    const userListsRef = collection(db, "lists");
+    const q = query(userListsRef, where("sharedWith", "array-contains", user.email));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
         const lists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUserLists(lists);
     });
@@ -78,12 +78,13 @@ export function fetchUserLists(setUserLists) {
 }
 
 
+
 export async function handleUpdateListOrder(data) {
     const user = auth.currentUser;
     if (user && data.length > 0) {
         const listId = data[0]?.id; 
         if (listId) {
-            const listRef = doc(db, 'users', user.uid, 'lists', listId);
+            const listRef = doc(db,'lists', listId);
             await updateDoc(listRef, { items: data.map(item => item.name) }) 
                 .then(() => {
                     console.log('Ordem atualizada no Firestore');
@@ -98,7 +99,7 @@ export async function handleUpdateListOrder(data) {
 export async function handleRemoveList(itemId) {
     const user = auth.currentUser;
     if (user) {
-        const listRef = doc(db, 'users', user.uid, 'lists', itemId);
+        const listRef = doc(db, 'lists', itemId);
         await deleteDoc(listRef)
             .then(() => {
                 console.log('Lista removida do Firestore');
@@ -121,7 +122,7 @@ export const fetchItems = async (listName, setItems, setLoading, setError) => {
     setError(null);
 
     try {
-        const userListsRef = collection(db, 'users', auth.currentUser.uid, 'lists');
+        const userListsRef = collection(db,  'lists');
         const q = query(userListsRef, where('name', '==', listName));
         const querySnapshot = await getDocs(q);
         const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -147,12 +148,37 @@ export const updateItemOrder = async (items, setItems) => {
         updatedItems[0].items = items;
 
         if (updatedItems[0]?.id) {
-            const listRef = doc(db, 'users', auth.currentUser.uid, 'lists', updatedItems[0].id);
+            const listRef = doc(db, 'lists', updatedItems[0].id);
             updateDoc(listRef, { items })
                 .catch(error => console.error('Erro ao atualizar ordem no Firestore:', error));
         }
 
         return updatedItems;
+    });
+};
+
+export const handlePriceChange = async (id, newPrice, setItems) => {
+    setItems(prevItems => {
+        const updatedItems = [...prevItems];
+        const list = updatedItems[0];
+
+        if (list?.items) {
+            const itemIndex = list.items.findIndex(item => item.id === id);
+            if (itemIndex > -1) {
+                list.items[itemIndex] = { ...list.items[itemIndex], price: newPrice };
+
+                if (list?.id) {
+                    
+                    console.log(`Atualizando Firestore para lista ${list.id}:`, list.items);
+
+                    const listRef = doc(db, 'lists', list.id);
+                    updateDoc(listRef, { items: list.items })
+                        .then(() => console.log("Preço atualizado no Firestore"))
+                        .catch(error => console.error("Erro ao atualizar preço no Firestore:", error));
+                }
+            }
+        }
+        return [...updatedItems];
     });
 };
 
@@ -180,7 +206,7 @@ export const handleCheckboxChange = async (id, newState, setItems) => {
                 updatedItems[0] = list;
 
                 if (list?.id) {
-                    const listRef = doc(db, 'users', auth.currentUser.uid, 'lists', list.id);
+                    const listRef = doc(db,'lists', list.id);
                     updateDoc(listRef, { items: list.items })
                         .catch(error => console.error('Erro ao atualizar estado no Firestore:', error));
                 }

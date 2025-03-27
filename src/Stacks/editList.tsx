@@ -8,16 +8,16 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Alert as RNAlert, StyleSheet, View, Animated } from 'react-native';
 
 export default function EditList() {
-    const [items, setItems] = useState([]); // Estado para os itens da lista
-    const [loading, setLoading] = useState(true); // Estado de carregamento
-    const [error, setError] = useState(null); // Estado para gerenciar erros
-    const [listId, setListId] = useState(null); // Estado para o ID da lista
+    const [items, setItems] = useState([]); 
+    const [loading, setLoading] = useState(true); 
+    const [error, setError] = useState(null); 
+    const [listId, setListId] = useState(null); 
     const route = useRoute();
     const navigation = useNavigation();
 
-    const { listName, onUpdate } = route.params; // Obtendo parâmetros da rota
+    const { listName } = route.params;
 
-    const shakeAnimation = useRef(new Animated.Value(0)).current; // Animação de shake
+    const shakeAnimation = useRef(new Animated.Value(0)).current; 
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -31,13 +31,12 @@ export default function EditList() {
             }
 
             try {
-                const userListsRef = collection(db, 'users', auth.currentUser.uid, 'lists');
+                const userListsRef = collection(db, 'lists');
                 const q = query(userListsRef, where('name', '==', listName));
                 const querySnapshot = await getDocs(q);
                 const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 if (fetchedLists.length > 0) {
-                    // Supondo que 'items' seja um array de objetos que possuem uma propriedade 'name'
                     setItems(fetchedLists[0]?.items || []);
                     setListId(fetchedLists[0]?.id);
                 }
@@ -53,38 +52,16 @@ export default function EditList() {
     }, [listName]);
 
     useEffect(() => {
-        // Animação de shake
-        Animated.sequence([
-            Animated.timing(shakeAnimation, {
-                toValue: -10,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-            Animated.timing(shakeAnimation, {
-                toValue: 10,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-            Animated.timing(shakeAnimation, {
-                toValue: -5,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-            Animated.timing(shakeAnimation, {
-                toValue: 5,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-            Animated.timing(shakeAnimation, {
-                toValue: 0,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [items]);
+        // Definindo a função de atualização no options da navegação
+        navigation.setOptions({
+            onUpdate: () => {
+                console.log('Atualizar lista');
+            },
+        });
+    }, [navigation]);
 
     const handleDragEnd = async ({ data }) => {
-        setItems(data); // Atualiza a lista após arrastar
+        setItems(data); 
     };
 
     const handleRemoveItem = (itemToRemove) => {
@@ -99,7 +76,7 @@ export default function EditList() {
                 {
                     text: "Remover",
                     onPress: () => {
-                        setItems(prevItems => prevItems.filter(item => item.id !== itemToRemove.id)); // Filtra pelo ID do item
+                        setItems(prevItems => prevItems.filter(item => item.id !== itemToRemove.id)); 
                     }
                 }
             ]
@@ -116,10 +93,12 @@ export default function EditList() {
         setError(null);
 
         try {
-            const listRef = doc(db, 'users', auth.currentUser.uid, 'lists', listId);
+            const listRef = doc(db,'lists', listId);
             await updateDoc(listRef, { items });
             console.log('Alterações salvas no Firestore');
-            if (onUpdate) onUpdate(); // Chama a função de callback, se definida
+            // Acessando a função onUpdate diretamente via navigation
+            const parent = navigation.getParent();
+            parent?.getState().routes.find(r => r.name === "ListScreen")?.params?.onUpdate?.();
             navigation.goBack();
         } catch (error) {
             console.error('Erro ao salvar alterações no Firestore:', error);
@@ -130,8 +109,8 @@ export default function EditList() {
     };
 
     const renderItem = ({ item, index, drag }) => (
-        <Pressable onLongPress={drag} key={item.id}> {/* Use 'item.id' como chave */}
-            <Animated.View style={[styles.card, { transform: [{ translateX: shakeAnimation }] }]}>
+        <Pressable onLongPress={drag} key={item.id}> 
+            <Animated.View style={[styles.card, { transform: [{ translateX: shakeAnimation }] }]} >
                 <Box
                     p={4}
                     bg="gray.700"
@@ -144,11 +123,11 @@ export default function EditList() {
                     justifyContent="space-between"
                 >
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
-                        {item.name} {/* Acesse a propriedade 'name' do objeto */}
+                        {item.name} 
                     </Text>
                     <IconButton
                         icon={<MaterialCommunityIcons name="minus-circle" size={24} color="#943631" />}
-                        onPress={() => handleRemoveItem(item)} // Chama a função para remover o item
+                        onPress={() => handleRemoveItem(item)} 
                     />
                 </Box>
             </Animated.View>
@@ -171,38 +150,33 @@ export default function EditList() {
                 <DraggableFlatList
                     data={items}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id} // Use 'item.id' como chave
+                    keyExtractor={(item) => item.id}
                     onDragEnd={handleDragEnd}
-                    contentContainerStyle={{ padding: 4, paddingBottom: 80 }}
+                    contentContainerStyle={{ padding: 4 }}
                 />
             )}
 
-            <View style={styles.saveButtonContainer}>
-                <Button
-                    onPress={handleSaveChanges}
-                    bg="blue.500"
-                    borderRadius="md"
-                    w="100%"
-                    h={12}
-                    _text={{ color: 'white', fontSize: 'lg' }}
-                >
-                    Salvar Alterações
+            {error && <Text color="red.500" textAlign="center">{error}</Text>}
+
+            <Box mt={8} w="100%">
+                <Button onPress={handleSaveChanges} bg="green.500" w="100%" borderRadius="lg">
+                    {loading ? (
+                        <Spinner color="white" />
+                    ) : (
+                        <Text color="white">Salvar Alterações</Text>
+                    )}
                 </Button>
-            </View>
+            </Box>
         </VStack>
     );
 }
 
 const styles = StyleSheet.create({
-    saveButtonContainer: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: 16,
-        backgroundColor: 'transparent',
-    },
     card: {
-        marginVertical: 5,
+        marginBottom: 8,
+        backgroundColor: 'gray',
+        padding: 12,
+        borderRadius: 8,
+        minHeight: 50,
     },
 });

@@ -11,18 +11,17 @@ export default function SharedListsScreen() {
     const [sharedLists, setSharedLists] = useState([]);
     const navigation = useNavigation();
 
-    // Função para buscar listas compartilhadas com o usuário
     const fetchSharedLists = () => {
         const user = auth.currentUser;
         if (!user) return;
 
-        const userListsRef = collection(db, 'users', user.uid, 'lists');
-        const q = query(userListsRef, where('sharedWith', 'array-contains', user.email)); // Atualizado para buscar por email
+        const userListsRef = collection(db, 'lists');
+        const q = query(userListsRef, where('sharedWith', 'array-contains', user.email)); 
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const lists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            // Filtra listas para garantir que não sejam próprias
+     
             const filteredLists = lists.filter(list => list.sharedWith.length > 1);
 
             setSharedLists(filteredLists);
@@ -41,7 +40,7 @@ export default function SharedListsScreen() {
         };
     }, []);
 
-    // Função para remover um item da lista com confirmação
+  
     const handleRemoveItem = (itemId) => {
         RNAlert.alert(
             "Confirmar Remoção",
@@ -71,7 +70,7 @@ export default function SharedListsScreen() {
         );
     };
 
-    // Função para renderizar cada item
+    
     const renderItem = ({ item }) => (
         <Box
             key={item.id}
@@ -87,7 +86,7 @@ export default function SharedListsScreen() {
             <Text
                 fontSize="xl"
                 color="white"
-                onPress={() => handleListPress(item.name)} // Navegar ao clicar
+                onPress={() => handleListPress(item.name)} 
             >
                 {item.name}
             </Text>

@@ -5,7 +5,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../Services/FirebaseConfig';
 
 export default function ShareListScreen({ route }) {
-    const { listId } = route.params; // Obtendo o ID da lista a partir dos parâmetros da rota
+    const { listId } = route.params; 
     const [emailToShare, setEmailToShare] = useState('');
     const [error, setError] = useState('');
     const navigation = useNavigation();
@@ -23,23 +23,21 @@ export default function ShareListScreen({ route }) {
         }
 
         try {
-            // Obter a referência do documento da lista
-            const listRef = doc(db, 'users', user.uid, 'lists', listId);
+         
+            const listRef = doc(db,  'lists', listId);
 
-            // Obter o documento da lista
             const listDoc = await getDoc(listRef);
             const listData = listDoc.data();
 
             if (listData) {
-                // Verificar se 'sharedWith' é um array
+           
                 if (!Array.isArray(listData.sharedWith)) {
                     listData.sharedWith = [];
                 }
 
-                // Adicionar o email à lista de compartilhamento
+          
                 const updatedSharedWith = [...listData.sharedWith, emailToShare.trim()];
 
-                // Atualizar o documento no Firestore
                 await updateDoc(listRef, { sharedWith: updatedSharedWith });
 
                 console.log('Lista compartilhada com sucesso!');
