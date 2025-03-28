@@ -141,7 +141,6 @@ export const fetchItems = async (listName, setItems, setLoading, setError) => {
     }
 };
 
-// Função para atualizar a ordem dos itens no Firestore após reordenar
 export const updateItemOrder = async (items, setItems) => {
     setItems(prevItems => {
         const updatedItems = [...prevItems];
@@ -157,6 +156,8 @@ export const updateItemOrder = async (items, setItems) => {
     });
 };
 
+
+
 export const handlePriceChange = async (id, newPrice, setItems) => {
     setItems(prevItems => {
         const updatedItems = [...prevItems];
@@ -164,15 +165,20 @@ export const handlePriceChange = async (id, newPrice, setItems) => {
 
         if (list?.items) {
             const itemIndex = list.items.findIndex(item => item.id === id);
+            console.log("Índice do item:", itemIndex);
+            
             if (itemIndex > -1) {
+               
                 list.items[itemIndex] = { ...list.items[itemIndex], price: newPrice };
 
                 if (list?.id) {
-                    
-                    console.log(`Atualizando Firestore para lista ${list.id}:`, list.items);
-
+               
+            
                     const listRef = doc(db, 'lists', list.id);
-                    updateDoc(listRef, { items: list.items })
+                    updateDoc(listRef, {
+                        items: list.items 
+                    })
+                    
                         .then(() => console.log("Preço atualizado no Firestore"))
                         .catch(error => console.error("Erro ao atualizar preço no Firestore:", error));
                 }
@@ -181,6 +187,7 @@ export const handlePriceChange = async (id, newPrice, setItems) => {
         return [...updatedItems];
     });
 };
+
 
 
 export const handleCheckboxChange = async (id, newState, setItems) => {

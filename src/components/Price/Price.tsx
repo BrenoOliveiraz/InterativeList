@@ -8,7 +8,7 @@ const Price = ({ id, onChange, initialPrice = "" }) => {
     const [price, setPrice] = useState(initialPrice);
 
     useEffect(() => {
-        // Carregar o preço salvo quando o componente é montado
+       
         const loadPrice = async () => {
             try {
                 const storedPrice = await AsyncStorage.getItem(`${STORAGE_KEY_PREFIX}${id}`);

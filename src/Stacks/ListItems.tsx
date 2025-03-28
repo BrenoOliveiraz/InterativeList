@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { VStack, Box, Button, Text, Spinner, Pressable, HStack, Input } from 'native-base';
+import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-base';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -46,11 +46,6 @@ export default function ListScreen() {
                         initialPrice={item.price || 0}
                         onChange={(id, newPrice) => handlePriceChange(id, newPrice, setItems)}
                     />
-
-
-
-
-
                 </HStack>
             </Box>
         </Pressable>
@@ -91,11 +86,43 @@ export default function ListScreen() {
                 )
             )}
 
-            <Box mt={8} w="100%">
-                <Button onPress={() => navigation.goBack()} bg="blue.800" w="100%" borderRadius="lg">
+     
+            <VStack
+                position="absolute"
+                bottom={0}
+                left={0}
+                right={0}
+                p={4}
+                h={32} 
+                justifyContent="center"
+                alignItems="center"
+                bg="gray.800"
+                borderTopWidth={1}
+                borderColor="gray.600"
+            >
+
+                <HStack justifyContent="space-between" w="80%" alignItems="center">
+                    <HStack space={2} alignItems="center">
+                        <Text color="white">Meu Saldo</Text>
+                        <Text color="white">R$ 100,00</Text>
+                    </HStack>
+                    <HStack space={2} alignItems="center">
+                        <Text color="white">Total</Text>
+                        <Text color="white">R$ 200,00</Text>
+                    </HStack>
+                </HStack>
+
+                <Button
+                    onPress={() => navigation.goBack()}
+                    bg="blue.800"
+                    w="50%"
+                    borderRadius="lg"
+                    mt={4}
+                >
                     <Text color="white">Voltar</Text>
                 </Button>
-            </Box>
+            </VStack>
+
         </VStack>
     );
 }
