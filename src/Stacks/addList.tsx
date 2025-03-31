@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { VStack, Box, Button, Text, ScrollView, HStack, Input, Icon } from 'native-base';
 import { AddIcon, CloseIcon } from 'native-base';
 import { auth, db } from '../Services/FirebaseConfig';
-import Title from '../components/header/Title';
+import Title from '../components/Title';
 import { doc, setDoc, collection } from 'firebase/firestore';
 import { MaterialIcons } from '@expo/vector-icons';
 import { handleSaveList } from '../Services/Api';

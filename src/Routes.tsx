@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Login from './Stacks/login';
-import MainScreen from './Tabs/MyListsScreen';
+import MainScreen from './Tabs/myListsScreen';
 import FormRegister from './Stacks/register';
 import AddList from './Stacks/addList';
 import ListScreen from './Stacks/ListItems';
@@ -12,7 +12,7 @@ import EditList from './Stacks/editList';
 import InitialScreen from './Stacks/InitialScreen';
 import AuthContext from './Contexts/AuthContext';
 import SharedListsScreen from './Tabs/sharedListScreen';
-import ShareListScreen from './Stacks/ShareScreen';
+import ShareListScreen from './Stacks/shareScreen';
 import Tabs from './Tabs'
 
 const Stack = createNativeStackNavigator();

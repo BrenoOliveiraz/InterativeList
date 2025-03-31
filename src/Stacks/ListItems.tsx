@@ -3,10 +3,11 @@ import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-ba
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import Checkbox from '../components/CheckBox/Checkbox';
-import Title from '../components/header/Title';
+import Checkbox from '../components/Checkbox';
+import Title from '../components/Title';
 import { fetchItems, updateItemOrder, handleCheckboxChange, handlePriceChange } from '../Services/Api';
-import Prices from '../components/Price/Price';
+import Prices from '../components/Price';
+import Balance from '../components/Balance';
 
 export default function ListScreen() {
     const [items, setItems] = useState([]);
@@ -101,16 +102,7 @@ export default function ListScreen() {
                 borderColor="gray.600"
             >
 
-                <HStack justifyContent="space-between" w="80%" alignItems="center">
-                    <HStack space={2} alignItems="center">
-                        <Text color="white">Meu Saldo</Text>
-                        <Text color="white">R$ 100,00</Text>
-                    </HStack>
-                    <HStack space={2} alignItems="center">
-                        <Text color="white">Total</Text>
-                        <Text color="white">R$ 200,00</Text>
-                    </HStack>
-                </HStack>
+                <Balance  />
 
                 <Button
                     onPress={() => navigation.goBack()}

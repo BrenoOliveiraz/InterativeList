@@ -2,8 +2,8 @@
 import React, { useState, useContext } from 'react';
 import { Box, Button, Link, VStack, Text } from 'native-base';
 import { TouchableOpacity } from 'react-native';
-import Title from '../components/header/Title';
-import TextField from '../components/TextField/TextField';
+import Title from '../components/Title';
+import TextField from '../components/TextField';
 import AuthContext from '../Contexts/AuthContext';
 
 

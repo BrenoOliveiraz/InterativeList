@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ScrollView, Box, Button, Text } from 'native-base';
 import {sessions} from '../utils/textInputs'
-import Title from '../components/header/Title';
-import TextField from '../components/TextField/TextField';
+import Title from '../components/Title';
+import TextField from '../components/TextField';
 import { handleRegistration } from '../Services/Api';
 
 

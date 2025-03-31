@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { fetchUserLists, handleUpdateListOrder, handleRemoveList } from '../Services/Api'; // Importando as funções
 
 import { auth } from '../Services/FirebaseConfig';
-import Title from '../components/header/Title';
+import Title from '../components/Title';
 
 export default function MyListsScreen() {
     const [userLists, setUserLists] = useState([]);

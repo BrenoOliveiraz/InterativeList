@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from 'react-native-vector-icons'; // Ícones do Ionicons
-import MyListsScreen from './MyListsScreen';
+import MyListsScreen from './myListsScreen';
 import SharedListsScreen from './sharedListScreen';
 
 const Tab = createBottomTabNavigator();
