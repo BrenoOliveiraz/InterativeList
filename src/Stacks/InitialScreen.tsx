@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
-import { db, auth } from '../Services/FirebaseConfig'; 
+import { db, auth } from '../services/FirebaseConfig'; 
 import { doc, getDoc } from 'firebase/firestore';
 import { Center, Text, Spinner } from 'native-base';
 

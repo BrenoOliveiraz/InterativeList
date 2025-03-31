@@ -1,8 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from 'react-native-vector-icons'; // Ícones do Ionicons
+import { Ionicons } from '@expo/vector-icons'; // Corrigido o import dos ícones
 import MyListsScreen from './myListsScreen';
 import SharedListsScreen from './sharedListScreen';
+import Perfil from './perfil';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,10 +24,10 @@ export default function Tabs() {
         component={MyListsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" color={color} size={size} /> // Ícone da aba
+            <Ionicons name="list" color={color} size={size} /> // Ícone correto
           ),
-          tabBarLabel: 'Minhas Listas', // Texto da aba
-          headerShown: false, // Remove o header
+          tabBarLabel: 'Minhas Listas',
+          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -34,10 +35,21 @@ export default function Tabs() {
         component={SharedListsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="share-social" color={color} size={size} /> // Ícone da aba
+            <Ionicons name="share-social" color={color} size={size} />
           ),
-          tabBarLabel: 'Listas Compartilhadas', // Texto da aba
-          headerShown: false, // Remove o header
+          tabBarLabel: 'Listas Compartilhadas',
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="Perfil"
+        component={Perfil}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" color={color} size={size} /> // Ícone de perfil correto
+          ),
+          tabBarLabel: 'Perfil', // Corrigido o texto da aba
+          headerShown: false,
         }}
       />
     </Tab.Navigator>

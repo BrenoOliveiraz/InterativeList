@@ -1,6 +1,7 @@
 import { auth, db } from "./FirebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, collection, onSnapshot, updateDoc, deleteDoc, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, collection, onSnapshot, updateDoc, deleteDoc, query, where, getDocs, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 
 ///////////////////LÓGIA DE REGISTRO FIRESTORE/////////////////////////////
@@ -223,3 +224,32 @@ export const handleCheckboxChange = async (id, newState, setItems) => {
     });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////LÓGICA DO PERFIL//////////////
+export const HandleUser = () => {
+    const [userData, setUserData] = useState<{ nome: string; email: string; uid: string } | null>(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            try {
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    setUserData(userSnap.data() as { nome: string; email: string; uid: string });
+                } else {
+                    console.log("Usuário não encontrado no Firestore");
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    return userData;
+};

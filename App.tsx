@@ -3,7 +3,7 @@ import React from 'react';
 import { NativeBaseProvider, StatusBar } from 'native-base';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Routes from './src/Routes';
-import { AuthProvider } from './src/Contexts/AuthContext';
+import { AuthProvider } from './src/contexts/AuthContext';
 
 export default function App() {
   return (

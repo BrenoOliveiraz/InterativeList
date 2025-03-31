@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Checkbox from '../components/Checkbox';
 import Title from '../components/Title';
-import { fetchItems, updateItemOrder, handleCheckboxChange, handlePriceChange } from '../Services/Api';
+import { fetchItems, updateItemOrder, handleCheckboxChange, handlePriceChange } from '../services/Api';
 import Prices from '../components/Price';
 import Balance from '../components/Balance';
 

@@ -4,7 +4,7 @@ import { Box, Button, Link, VStack, Text } from 'native-base';
 import { TouchableOpacity } from 'react-native';
 import Title from '../components/Title';
 import TextField from '../components/TextField';
-import AuthContext from '../Contexts/AuthContext';
+import AuthContext from '../contexts/AuthContext';
 
 
 export default function Login({ navigation }) {

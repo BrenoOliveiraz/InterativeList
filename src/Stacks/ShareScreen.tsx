@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { VStack, Box, Button, Text, Input, Alert } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '../Services/FirebaseConfig';
+import { auth, db } from '../services/FirebaseConfig';
 
 export default function ShareListScreen({ route }) {
     const { listId } = route.params; 

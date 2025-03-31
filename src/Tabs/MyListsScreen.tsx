@@ -4,9 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { Alert as RNAlert } from 'react-native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { fetchUserLists, handleUpdateListOrder, handleRemoveList } from '../Services/Api'; // Importando as funções
+import { fetchUserLists, handleUpdateListOrder, handleRemoveList } from '../services/Api'; // Importando as funções
 
-import { auth } from '../Services/FirebaseConfig';
+import { auth } from '../services/FirebaseConfig';
 import Title from '../components/Title';
 
 export default function MyListsScreen() {

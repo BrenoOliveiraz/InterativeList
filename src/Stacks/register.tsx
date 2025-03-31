@@ -3,7 +3,7 @@ import { ScrollView, Box, Button, Text } from 'native-base';
 import {sessions} from '../utils/textInputs'
 import Title from '../components/Title';
 import TextField from '../components/TextField';
-import { handleRegistration } from '../Services/Api';
+import { handleRegistration } from '../services/Api';
 
 
 type LoginProps = {

@@ -3,17 +3,17 @@ import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Login from './Stacks/login';
-import MainScreen from './Tabs/myListsScreen';
-import FormRegister from './Stacks/register';
-import AddList from './Stacks/addList';
-import ListScreen from './Stacks/ListItems';
-import EditList from './Stacks/editList';
-import InitialScreen from './Stacks/InitialScreen';
-import AuthContext from './Contexts/AuthContext';
-import SharedListsScreen from './Tabs/sharedListScreen';
-import ShareListScreen from './Stacks/shareScreen';
-import Tabs from './Tabs'
+import Login from './stacks/login';
+import MainScreen from './tabs/myListsScreen';
+import FormRegister from './stacks/register';
+import AddList from './stacks/addList';
+import ListScreen from './stacks/ListItems';
+import EditList from './stacks/editList';
+import InitialScreen from './stacks/InitialScreen';
+import AuthContext from './contexts/AuthContext';
+import SharedListsScreen from './tabs/sharedListScreen';
+import ShareListScreen from './stacks/shareScreen';
+import Tabs from './tabs'
 
 const Stack = createNativeStackNavigator();
 
