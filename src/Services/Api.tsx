@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 ///////////////////LÓGIA DE REGISTRO FIRESTORE/////////////////////////////
 export async function handleRegistration(formData: { nome: string; email: string; senha: string }, navigation: any) {
     try {
-     
+
         const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.senha);
         const user = userCredential.user;
         console.log("Usuário criado:", user.uid);
 
- 
+
         await setDoc(doc(db, "users", user.uid), {
             uid: user.uid,
             nome: formData.nome,
@@ -21,7 +21,7 @@ export async function handleRegistration(formData: { nome: string; email: string
 
         console.log("Dados do usuário salvos no Firestore!");
 
-        
+
         navigation.navigate("Main");
     } catch (error) {
         console.error("Erro ao criar usuário: ", error);
@@ -83,10 +83,10 @@ export function fetchUserLists(setUserLists) {
 export async function handleUpdateListOrder(data) {
     const user = auth.currentUser;
     if (user && data.length > 0) {
-        const listId = data[0]?.id; 
+        const listId = data[0]?.id;
         if (listId) {
-            const listRef = doc(db,'lists', listId);
-            await updateDoc(listRef, { items: data.map(item => item.name) }) 
+            const listRef = doc(db, 'lists', listId);
+            await updateDoc(listRef, { items: data.map(item => item.name) })
                 .then(() => {
                     console.log('Ordem atualizada no Firestore');
                 })
@@ -123,7 +123,7 @@ export const fetchItems = async (listName, setItems, setLoading, setError) => {
     setError(null);
 
     try {
-        const userListsRef = collection(db,  'lists');
+        const userListsRef = collection(db, 'lists');
         const q = query(userListsRef, where('name', '==', listName));
         const querySnapshot = await getDocs(q);
         const fetchedLists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -167,19 +167,19 @@ export const handlePriceChange = async (id, newPrice, setItems) => {
         if (list?.items) {
             const itemIndex = list.items.findIndex(item => item.id === id);
             console.log("Índice do item:", itemIndex);
-            
+
             if (itemIndex > -1) {
-               
+
                 list.items[itemIndex] = { ...list.items[itemIndex], price: newPrice };
 
                 if (list?.id) {
-               
-            
+
+
                     const listRef = doc(db, 'lists', list.id);
                     updateDoc(listRef, {
-                        items: list.items 
+                        items: list.items
                     })
-                    
+
                         .then(() => console.log("Preço atualizado no Firestore"))
                         .catch(error => console.error("Erro ao atualizar preço no Firestore:", error));
                 }
@@ -189,40 +189,46 @@ export const handlePriceChange = async (id, newPrice, setItems) => {
     });
 };
 
+export const handleCheckboxChange = async (itemId, isSelected, setItems) => {
+    try {
 
+        const listsRef = collection(db, 'lists');
+        const snapshot = await getDocs(listsRef);
 
-export const handleCheckboxChange = async (id, newState, setItems) => {
-    setItems(prevItems => {
-        const updatedItems = [...prevItems];
-        const list = updatedItems[0];
+        for (const docSnap of snapshot.docs) {
+            const listData = docSnap.data();
+            const itemIndex = listData.items.findIndex((item) => item.id === itemId);
 
-        if (list?.items) {
-            const itemIndex = list.items.findIndex(item => item.id === id);
+            if (itemIndex !== -1) {
+            
+                const updatedItems = [...listData.items];
+                updatedItems[itemIndex].selected = isSelected;
 
-            if (itemIndex > -1) {
-                const item = list.items[itemIndex];
-                const updatedItem = { ...item, selected: newState };
+                await updateDoc(doc(db, 'lists', docSnap.id), {
+                    items: updatedItems
+                });
 
-                list.items = list.items.filter(item => item.id !== id);
+              
+                setItems((prevItems) => {
+                    const updated = [...prevItems];
+                    updated[0].items = updatedItems;
+                    return updated;
+                });
 
-                if (newState) {
-                    list.items.push(updatedItem);
-                } else {
-                    list.items.splice(item.originalIndex, 0, updatedItem);
-                }
-
-                updatedItems[0] = list;
-
-                if (list?.id) {
-                    const listRef = doc(db,'lists', list.id);
-                    updateDoc(listRef, { items: list.items })
-                        .catch(error => console.error('Erro ao atualizar estado no Firestore:', error));
-                }
+             
+                break;
             }
         }
-        return updatedItems;
-    });
+    } catch (error) {
+        console.error('Erro ao atualizar item no Firestore:', error);
+    }
 };
+
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////LÓGICA DO PERFIL//////////////

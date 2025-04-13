@@ -8,6 +8,7 @@ import Title from '../components/Title';
 import { fetchItems, updateItemOrder, handleCheckboxChange, handlePriceChange } from '../services/Api';
 import Prices from '../components/Price';
 import Balance from '../components/Balance';
+import CheckboxYT from '../components/CheckboxYT';
 
 export default function ListScreen() {
     const [items, setItems] = useState([]);
@@ -38,10 +39,17 @@ export default function ListScreen() {
                 opacity={item.selected ? 0.5 : 1}
             >
                 <HStack alignItems="center" justifyContent="space-between" space={3}>
-                    <Checkbox id={item.id} onChange={(id, state) => handleCheckboxChange(id, state, setItems)} isChecked={item.selected} />
+                    <CheckboxYT
+                        id={item.id}
+                        selected={item.selected}
+                        setItems={setItems}
+                    />
+
+
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
                         {item.name}
                     </Text>
+
                     <Prices
                         id={item.id}
                         initialPrice={item.price || 0}
@@ -51,6 +59,7 @@ export default function ListScreen() {
             </Box>
         </Pressable>
     );
+
 
     return (
         <VStack flex={1} p={5} bg="gray.900">
@@ -87,14 +96,14 @@ export default function ListScreen() {
                 )
             )}
 
-     
+
             <VStack
                 position="absolute"
                 bottom={0}
                 left={0}
                 right={0}
                 p={4}
-                h={32} 
+                h={32}
                 justifyContent="center"
                 alignItems="center"
                 bg="gray.800"
@@ -102,7 +111,7 @@ export default function ListScreen() {
                 borderColor="gray.600"
             >
 
-                <Balance  />
+                <Balance />
 
                 <Button
                     onPress={() => navigation.goBack()}
