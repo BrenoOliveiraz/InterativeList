@@ -54,7 +54,7 @@ export default function ListScreen() {
                 borderRadius="lg"
                 mb={2}
                 shadow={2}
-                minHeight={50}
+                height={20}
                 justifyContent="center"
                 opacity={item.selected ? 0.5 : 1}
             >
@@ -78,24 +78,32 @@ export default function ListScreen() {
         </Pressable>
     );
 
-    return (
-        <VStack flex={1} p={5} bg="gray.900">
-            <HStack alignItems='center'>
+   return (
+        <VStack flex={1} px={5} pt={10} bg="gray.900">
+            <HStack alignItems="center" mb={5}>
                 <Button
                     onPress={() => navigation.navigate('EditList', { listName, onUpdate: () => fetchItems(listName, setItems, setLoading, setError) })}
-                    bg="green.500"
-                    borderRadius="md"
-                    w="20%"
-                    h={10}
-                    _text={{ color: 'white', fontSize: 'lg' }}
-                    leftIcon={<MaterialCommunityIcons name="file-document-edit-outline" size={24} color="white" />}
-                />
-                <Title marginLeft={2} color="red.500"> {listName}</Title>
+                    bg="emerald.500"
+                    borderRadius="full"
+                    px={4}
+                    py={2}
+                    _icon={{ color: "white" }}
+                    leftIcon={
+                        <MaterialCommunityIcons
+                            name="file-document-edit-outline"
+                            size={20}
+                            color="white"
+                        />
+                    }
+                >
+                    <Text color="white" fontSize="md">Editar</Text>
+                </Button>
+                <Title marginLeft={3} color="cyan.400">{listName}</Title>
             </HStack>
 
             {loading ? (
                 <VStack flex={1} justifyContent="center" alignItems="center">
-                    <Spinner color="blue.500" />
+                    <Spinner color="cyan.400" size="lg" />
                 </VStack>
             ) : (
                 items.length > 0 ? (
@@ -104,11 +112,11 @@ export default function ListScreen() {
                         renderItem={renderItem}
                         keyExtractor={(item, index) => `draggable-item-${index}`}
                         onDragEnd={handleDragEnd}
-                        contentContainerStyle={{ padding: 4, paddingBottom: 180 }}
+                        contentContainerStyle={{ paddingBottom: 180 }}
                     />
                 ) : (
                     <VStack flex={1} justifyContent="center" alignItems="center">
-                        <Text color="white">Nenhuma lista encontrada com o nome fornecido.</Text>
+                        <Text color="gray.300" fontSize="md">Nenhuma lista encontrada com esse nome.</Text>
                     </VStack>
                 )
             )}
@@ -118,27 +126,23 @@ export default function ListScreen() {
                 bottom={0}
                 left={0}
                 right={0}
-                p={4}
-                h={32}
-                justifyContent="center"
-                alignItems="center"
+                p={5}
                 bg="gray.800"
                 borderTopWidth={1}
-                borderColor="gray.600"
+                borderColor="gray.700"
+                alignItems="center"
             >
-                <Text>
-
-                <Balance saldo={saldo} />  
-                </Text>
+                <Balance saldo={saldo} />
 
                 <Button
                     onPress={() => navigation.goBack()}
-                    bg="blue.800"
-                    w="50%"
-                    borderRadius="lg"
+                    bg="blue.600"
                     mt={4}
+                    px={8}
+                    py={3}
+                    borderRadius="xl"
                 >
-                    <Text color="white">Voltar</Text>
+                    <Text color="white" fontWeight="bold">Voltar</Text>
                 </Button>
             </VStack>
         </VStack>

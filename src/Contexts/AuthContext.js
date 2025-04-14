@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/FirebaseConfig';
 
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/fire
 import { auth, db } from '../services/FirebaseConfig';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Alert as RNAlert, StyleSheet, View, Animated } from 'react-native';
+import { Alert as RNAlert, StyleSheet, Animated } from 'react-native';
 
 export default function EditList() {
     const [items, setItems] = useState([]); 

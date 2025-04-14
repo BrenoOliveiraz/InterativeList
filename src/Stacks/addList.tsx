@@ -22,7 +22,7 @@ interface Item {
 const AddList: React.FC<AddListProps> = ({ navigation }) => {
   const [listName, setListName] = useState<string>('');
   const [itemName, setItemName] = useState<string>('');
-  const [itemPrice, setItemPrice] = useState<string>('');  // Estado para o preço
+  const [itemPrice, setItemPrice] = useState<string>(''); 
   const [items, setItems] = useState<Item[]>([]);
   const [error, setError] = useState<string>('');
   const [emailToShare, setEmailToShare] = useState<string>('');

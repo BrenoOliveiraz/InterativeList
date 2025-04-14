@@ -1,9 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; 
-import MyListsScreen from './myListsScreen';
+
 import SharedListsScreen from './sharedListScreen';
 import Perfil from './perfil';
+import MyListsScreen from './MyListsScreen';
 
 const Tab = createBottomTabNavigator();
 

@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Alert as RNAlert } from 'react-native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { fetchUserLists, handleUpdateListOrder, handleRemoveList } from '../services/Api'; // Importando as funções
 
+import { fetchUserLists, handleUpdateListOrder, handleRemoveList } from '../services/Api';
 import { auth } from '../services/FirebaseConfig';
 import Title from '../components/Title';
 
@@ -14,8 +14,7 @@ export default function MyListsScreen() {
     const navigation = useNavigation();
 
     useEffect(() => {
-        const unsubscribe = fetchUserLists(setUserLists); 
-
+        const unsubscribe = fetchUserLists(setUserLists);
         return () => {
             if (typeof unsubscribe === 'function') {
                 unsubscribe();
@@ -25,7 +24,7 @@ export default function MyListsScreen() {
 
     const handleDragEnd = async ({ data }) => {
         setUserLists(data);
-        await handleUpdateListOrder(data); 
+        await handleUpdateListOrder(data);
     };
 
     const handleRemoveItem = (itemId) => {
@@ -34,7 +33,7 @@ export default function MyListsScreen() {
             "Você realmente deseja remover esta lista?",
             [
                 { text: "Cancelar", style: "cancel" },
-                { text: "Remover", onPress: () => handleRemoveList(itemId) } 
+                { text: "Remover", onPress: () => handleRemoveList(itemId) }
             ]
         );
     };
@@ -51,10 +50,6 @@ export default function MyListsScreen() {
         navigation.navigate('ListScreen', { listName });
     };
 
-    const handleSharedLists = () => {
-        navigation.navigate('SharedListsScreen');
-    };
-
     const handleLogout = async () => {
         try {
             await auth.signOut();
@@ -64,35 +59,39 @@ export default function MyListsScreen() {
         }
     };
 
-    const renderItem = ({ item, index, drag }) => (
+    const renderItem = ({ item, drag }) => (
         <Box
             key={item.id}
             p={4}
-            bg="gray.700"
-            borderRadius="lg"
-            mb={2}
-            shadow={2}
+            bg="gray.800"
+            borderRadius="2xl"
+            mb={3}
+            shadow={3}
             flexDirection="row"
             alignItems="center"
             justifyContent="space-between"
         >
             <Text
-                fontSize="xl"
+                fontSize="lg"
                 color="white"
+                fontWeight="medium"
                 onLongPress={drag}
-                onPress={() => handleListPress(item.name)} 
+                onPress={() => handleListPress(item.name)}
             >
                 {item.name}
             </Text>
 
             <Menu
-                w="150"
+                w="40"
+                borderRadius="md"
+                bg="gray.700"
+                _item={{ _text: { color: 'white' } }}
                 trigger={(triggerProps) => (
                     <Pressable {...triggerProps}>
                         <Icon
                             as={<MaterialCommunityIcons name="dots-vertical" />}
                             size="lg"
-                            color="white"
+                            color="gray.300"
                         />
                     </Pressable>
                 )}
@@ -104,7 +103,8 @@ export default function MyListsScreen() {
     );
 
     return (
-        <VStack flex={1} p={5} bg="gray.900">
+        <VStack flex={1} px={5} pt={10} bg="gray.900" space={4}>
+            {/* Header */}
             <Box flexDirection="row" justifyContent="space-between" alignItems="center">
                 <Title color="white">Minhas Listas</Title>
                 <IconButton
@@ -113,27 +113,31 @@ export default function MyListsScreen() {
                     _icon={{ color: 'white' }}
                 />
             </Box>
+
+            {/* Lista */}
             {userLists.length > 0 ? (
                 <DraggableFlatList
                     data={userLists}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
                     onDragEnd={handleDragEnd}
-                    contentContainerStyle={{ padding: 4 }}
+                    contentContainerStyle={{ paddingBottom: 16 }}
                 />
             ) : (
                 <VStack flex={1} justifyContent="center" alignItems="center">
-                    <Text color="white">Nenhuma lista salva ainda.</Text>
+                    <Text color="gray.300">Nenhuma lista salva ainda.</Text>
                 </VStack>
             )}
-            <Box mt={5} w="100%" alignItems="center">
+
+            {/* Botão de adicionar nova lista */}
+            <Box pb={5}>
                 <Button
                     onPress={handleAddList}
                     bg="green.500"
-                    borderRadius="md"
-                    w="90%" 
+                    borderRadius="2xl"
+                    w="100%"
                     h={12}
-                    _text={{ color: 'white', fontSize: 'lg' }}
+                    _pressed={{ bg: 'green.600' }}
                     leftIcon={
                         <Icon
                             as={<MaterialCommunityIcons name="plus" />}
@@ -141,9 +145,11 @@ export default function MyListsScreen() {
                             color="white"
                         />
                     }
-                />
+                    _text={{ color: 'white', fontSize: 'md', fontWeight: 'medium' }}
+                >
+                    Nova Lista
+                </Button>
             </Box>
-
         </VStack>
     );
 }
