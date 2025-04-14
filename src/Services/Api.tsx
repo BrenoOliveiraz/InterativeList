@@ -54,7 +54,9 @@ export async function handleSaveList(listName: string, items: any[], emailToShar
             name: listName,
             items: items,
             sharedWith: emailToShare ? [user.email, emailToShare.trim()] : [user.email],
+            ownerId: user.uid 
         });
+        
 
         console.log("Lista salva com sucesso!");
         navigation.goBack();

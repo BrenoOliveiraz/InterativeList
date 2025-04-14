@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons'; // Corrigido o import dos ícones
+import { Ionicons } from '@expo/vector-icons'; 
 import MyListsScreen from './myListsScreen';
 import SharedListsScreen from './sharedListScreen';
 import Perfil from './perfil';
@@ -11,11 +11,11 @@ export default function Tabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#42f44b', // Cor do ícone ativo
-        tabBarInactiveTintColor: 'gray', // Cor do ícone inativo
+        tabBarActiveTintColor: '#42f44b', 
+        tabBarInactiveTintColor: 'gray', 
         tabBarStyle: {
-          backgroundColor: '#333', // Cor de fundo da tab
-          paddingBottom: 5, // Ajuste do padding inferior
+          backgroundColor: '#333', 
+          paddingBottom: 5, 
         },
       }}
     >
@@ -24,7 +24,7 @@ export default function Tabs() {
         component={MyListsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" color={color} size={size} /> // Ícone correto
+            <Ionicons name="list" color={color} size={size} /> 
           ),
           tabBarLabel: 'Minhas Listas',
           headerShown: false,
@@ -46,9 +46,9 @@ export default function Tabs() {
         component={Perfil}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" color={color} size={size} /> // Ícone de perfil correto
+            <Ionicons name="person" color={color} size={size} /> 
           ),
-          tabBarLabel: 'Perfil', // Corrigido o texto da aba
+          tabBarLabel: 'Perfil', 
           headerShown: false,
         }}
       />

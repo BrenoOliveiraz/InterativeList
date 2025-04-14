@@ -3,24 +3,44 @@ import { VStack, Box, Button, Text, Spinner, Pressable, HStack } from 'native-ba
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import Checkbox from '../components/Checkbox';
+
 import Title from '../components/Title';
-import { fetchItems, updateItemOrder, handleCheckboxChange, handlePriceChange } from '../services/Api';
+import { fetchItems, updateItemOrder, handlePriceChange } from '../services/Api';
 import Prices from '../components/Price';
 import Balance from '../components/Balance';
 import CheckboxYT from '../components/CheckboxYT';
+import { getDoc, doc } from 'firebase/firestore';
+import { auth, db } from '../services/FirebaseConfig';
+
 
 export default function ListScreen() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [saldo, setSaldo] = useState<number | null>(null);  // Estado para o saldo
     const route = useRoute();
     const navigation = useNavigation();
     const { listName } = route.params;
 
+    // Função para buscar o saldo
+    const fetchSaldo = async () => {
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    setSaldo(userDoc.data().saldo || 0);
+                }
+            }
+        } catch (err) {
+            console.error("Erro ao buscar saldo:", err);
+        }
+    };
+
     useFocusEffect(
         useCallback(() => {
             fetchItems(listName, setItems, setLoading, setError);
+            fetchSaldo();  
         }, [listName])
     );
 
@@ -41,15 +61,13 @@ export default function ListScreen() {
                 <HStack alignItems="center" justifyContent="space-between" space={3}>
                     <CheckboxYT
                         id={item.id}
-                        selected={item.selected}
+                        selected={item.selected }
                         setItems={setItems}
+                        
                     />
-
-
                     <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
                         {item.name}
                     </Text>
-
                     <Prices
                         id={item.id}
                         initialPrice={item.price || 0}
@@ -59,7 +77,6 @@ export default function ListScreen() {
             </Box>
         </Pressable>
     );
-
 
     return (
         <VStack flex={1} p={5} bg="gray.900">
@@ -87,7 +104,7 @@ export default function ListScreen() {
                         renderItem={renderItem}
                         keyExtractor={(item, index) => `draggable-item-${index}`}
                         onDragEnd={handleDragEnd}
-                        contentContainerStyle={{ padding: 4, paddingBottom: 50 }}
+                        contentContainerStyle={{ padding: 4, paddingBottom: 180 }}
                     />
                 ) : (
                     <VStack flex={1} justifyContent="center" alignItems="center">
@@ -95,7 +112,6 @@ export default function ListScreen() {
                     </VStack>
                 )
             )}
-
 
             <VStack
                 position="absolute"
@@ -110,8 +126,10 @@ export default function ListScreen() {
                 borderTopWidth={1}
                 borderColor="gray.600"
             >
+                <Text>
 
-                <Balance />
+                <Balance saldo={saldo} />  
+                </Text>
 
                 <Button
                     onPress={() => navigation.goBack()}
@@ -123,7 +141,6 @@ export default function ListScreen() {
                     <Text color="white">Voltar</Text>
                 </Button>
             </VStack>
-
         </VStack>
     );
 }
