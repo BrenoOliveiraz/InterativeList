@@ -161,36 +161,6 @@ export const updateItemOrder = async (items, setItems) => {
 
 
 
-export const handlePriceChange = async (id, newPrice, setItems) => {
-    setItems(prevItems => {
-        const updatedItems = [...prevItems];
-        const list = updatedItems[0];
-
-        if (list?.items) {
-            const itemIndex = list.items.findIndex(item => item.id === id);
-            console.log("Índice do item:", itemIndex);
-
-            if (itemIndex > -1) {
-
-                list.items[itemIndex] = { ...list.items[itemIndex], price: newPrice };
-
-                if (list?.id) {
-
-
-                    const listRef = doc(db, 'lists', list.id);
-                    updateDoc(listRef, {
-                        items: list.items
-                    })
-
-                        .then(() => console.log("Preço atualizado no Firestore"))
-                        .catch(error => console.error("Erro ao atualizar preço no Firestore:", error));
-                }
-            }
-        }
-        return [...updatedItems];
-    });
-};
-
 export const handleCheckboxChange = async (itemId, isSelected, setItems) => {
     try {
 

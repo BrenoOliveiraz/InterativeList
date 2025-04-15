@@ -104,7 +104,7 @@ export default function MyListsScreen() {
 
     return (
         <VStack flex={1} px={5} pt={10} bg="gray.900" space={4}>
-            {/* Header */}
+      
             <Box flexDirection="row" justifyContent="space-between" alignItems="center">
                 <Title color="white">Minhas Listas</Title>
                 <IconButton
@@ -114,7 +114,7 @@ export default function MyListsScreen() {
                 />
             </Box>
 
-            {/* Lista */}
+         
             {userLists.length > 0 ? (
                 <DraggableFlatList
                     data={userLists}
@@ -129,7 +129,7 @@ export default function MyListsScreen() {
                 </VStack>
             )}
 
-            {/* Botão de adicionar nova lista */}
+          
             <Box pb={5}>
                 <Button
                     onPress={handleAddList}
