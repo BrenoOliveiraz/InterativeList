@@ -4,7 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import SharedListsScreen from './sharedListScreen';
 import Perfil from './perfil';
-import MyListsScreen from './MyListsScreen';
+import MyListsScreen from './myListsScreen';
+
 
 const Tab = createBottomTabNavigator();
 

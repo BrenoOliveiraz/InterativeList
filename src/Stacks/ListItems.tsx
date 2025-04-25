@@ -78,11 +78,15 @@ export default function ListScreen() {
           <Text fontSize="xl" color="white" numberOfLines={1} ellipsizeMode="tail">
             {item.name}
           </Text>
-          <Prices
-            id={item.id}
-            initialPrice={item.price || 0}
-            onChange={handlePriceChange}
-          />
+          <HStack alignItems="center">
+  <Text color="white">R$</Text>
+  <Prices
+    id={item.id}
+    initialPrice={item.price || 0}
+    onChange={handlePriceChange}
+  />
+</HStack>
+
         </HStack>
       </Box>
     </Pressable>

@@ -3,7 +3,6 @@ import { TextInput } from 'react-native';
 import { HStack, Box, Text, Icon, Spinner } from 'native-base';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useSaldo from '../hooks/useSaldo';
-import useItemsFromList from '../hooks/useItemsList';
 
 export default function Balance({ total }) {
   const {
@@ -15,12 +14,22 @@ export default function Balance({ total }) {
     formatToBRL,
   } = useSaldo();
 
- 
-  
+  const validTotal = !isNaN(total) ? total : 0;
+
+  const saldoEmCentavos = parseInt(rawSaldo || '0');
+  const totalEmCentavos = parseInt((validTotal * 100).toFixed(0));
+
+  // Calcula a diferença
+  const diferenca = saldoEmCentavos - totalEmCentavos;
 
   
-  const validTotal = !isNaN(total) ? total : 0;  
+  const saldoFormatado = diferenca < 0
+    ? formatToBRL(0)
+    : formatToBRL(diferenca);
 
+  const saldoNegativo = diferenca < 0
+    ? formatToBRL(Math.abs(diferenca))
+    : null;
 
   return (
     <HStack
@@ -41,7 +50,7 @@ export default function Balance({ total }) {
         <Box>
           <TextInput
             keyboardType="numeric"
-            value={formatToBRL(parseInt(rawSaldo - validTotal || '0'))}
+            value={saldoFormatado}
             onChangeText={handleSaldoChange}
             style={{
               color: "white",
@@ -55,6 +64,11 @@ export default function Balance({ total }) {
             placeholder="R$ 0,00"
             placeholderTextColor="gray"
           />
+          {saldoNegativo && (
+            <Text color="red.400" fontSize="sm" mt={1}>
+              -{saldoNegativo}
+            </Text>
+          )}
         </Box>
       </HStack>
 
@@ -68,8 +82,7 @@ export default function Balance({ total }) {
             Total
           </Text>
           <Text color="green.300" fontSize="md" fontWeight="bold">
-           
-            {validTotal !== null ? (formatToBRL(validTotal * 100)) : ('R$ 0,00')}
+            {formatToBRL(totalEmCentavos)}
           </Text>
         </HStack>
       )}

@@ -1,13 +1,13 @@
-// src/Routes.js
+
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Tabs from './tabs'
 import AuthContext from './contexts/AuthContext';
-import ShareListScreen from './stacks/ShareScreen';
+import ShareListScreen from './stacks/shareScreen';
 import AddList from './stacks/addList';
-import ListScreen from './stacks/ListItems';
+import ListScreen from './stacks/listItems';
 import EditList from './stacks/editList';
 import InitialScreen from './stacks/InitialScreen';
 import Login from './stacks/login';

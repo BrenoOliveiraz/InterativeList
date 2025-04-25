@@ -13,7 +13,7 @@ const Price = ({ id, onChange }) => {
         keyboardType="numeric"
         value={price}
         onChangeText={updatePrice}
-        placeholder={placeholderPrice ? `R$ ${placeholderPrice}` : 'Preço'}
+        placeholder={placeholderPrice ? ` ${placeholderPrice}` : ''}
         placeholderTextColor="#999"
       />
     </View>
@@ -22,20 +22,21 @@ const Price = ({ id, onChange }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center', 
+    alignItems: 'center',     
     padding: 4,
   },
   input: {
-    height: 44,
-    width: 65,
+    height: 40, 
+    width: 40,
     backgroundColor: '#F5F5F5',
     borderColor: '#D1D1D1',
     borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    borderRadius: 20, 
+    paddingHorizontal: 0, 
     fontSize: 16,
     textAlign: 'center',
+    textAlignVertical: 'center', 
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -43,5 +44,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 });
+
 
 export default Price;
