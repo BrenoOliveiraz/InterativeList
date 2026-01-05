@@ -66,7 +66,7 @@ const AddList: React.FC<AddListProps> = ({ navigation }) => {
         />
       </Box>
 
-      <Box mt={4}>
+      {/* <Box mt={4}>
         <Input
           placeholder="Insira o email opcional para compartilhar"
           value={emailToShare}
@@ -82,7 +82,7 @@ const AddList: React.FC<AddListProps> = ({ navigation }) => {
             shadow: 2
           }}
         />
-      </Box>
+      </Box> */}
 
       <Box mt={4}>
         <HStack alignItems="center">
@@ -125,6 +125,7 @@ const AddList: React.FC<AddListProps> = ({ navigation }) => {
             bg="green.500"
             borderRadius="md"
             p={2}
+            mx={2}
             height={12}
             flexDirection="row"
             alignItems="center"
@@ -145,7 +146,7 @@ const AddList: React.FC<AddListProps> = ({ navigation }) => {
             <HStack key={item.id} mb={2} p={4} bg="gray.700" borderRadius="md" shadow={2} alignItems="center" justifyContent="space-between">
               <Text color="white">{item.name}</Text>
               {item.price && (
-                <Text color="white">Preço: R${item.price.toFixed(2)}</Text>
+                <Text color="white"> R${item.price.toFixed(2)}</Text>
               )}
               <Button
                 onPress={() => handleRemoveItem(item.id)}
@@ -168,8 +169,7 @@ const AddList: React.FC<AddListProps> = ({ navigation }) => {
 
       <Box mt={8} w="100%">
         <Button
-          onPress={() => handleSaveList(listName, items, emailToShare, navigation)}
-          bg="blue.800"
+onPress={() => handleSaveList(listName, items, navigation)}          bg="blue.800"
           w="100%"
           borderRadius="md"
           shadow={3}

@@ -1,60 +1,48 @@
 import { useState, useEffect } from 'react';
-import { getDoc, updateDoc, doc } from 'firebase/firestore';
-import { auth, db } from '../services/FirebaseConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../services/FirebaseConfig';
 
-const STORAGE_KEY = 'user_balance';
-
-export default function useSaldo() {
-  const [saldo, setSaldo] = useState<number | null>(null);
-  const [rawSaldo, setRawSaldo] = useState<string>(''); // valor em centavos como string
+export default function useSaldo(listId: string) {
+  const [rawSaldo, setRawSaldo] = useState<string>('0'); 
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchSaldo = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            const saldoFromDb = userDoc.data().saldo || 0;
-            setSaldo(saldoFromDb);
-            setRawSaldo((saldoFromDb * 100).toString());
-          }
-        }
+    // Segurança: Se não houver ID, não tenta buscar nada
+    if (!listId) {
+      setLoading(false);
+      return;
+    }
 
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored !== null) {
-          setRawSaldo(stored);
-        }
-      } catch (err) {
-        setError("Erro ao buscar saldo");
-        console.error(err);
-      } finally {
-        setLoading(false);
+    const docRef = doc(db, 'lists', listId);
+    
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const saldoDaLista = docSnap.data().saldo ?? 0;
+        setRawSaldo(Math.round(saldoDaLista * 100).toString());
       }
-    };
+      setLoading(false);
+    }, (err) => {
+      console.error("Erro ao carregar saldo:", err);
+      setLoading(false);
+    });
 
-    fetchSaldo();
-  }, []);
+    return () => unsubscribe();
+  }, [listId]);
 
   const handleSaldoChange = async (text: string) => {
+    if (!listId) return; // Segurança contra o erro de 'undefined'
+
     const cleaned = text.replace(/\D/g, '');
-    setRawSaldo(cleaned);
-    const valueInCents = parseInt(cleaned) || 0;
-    const valueInReais = valueInCents / 100;
+    const finalValue = cleaned === '' ? '0' : cleaned;
+    setRawSaldo(finalValue);
+    
+    const valueInReais = parseInt(finalValue) / 100;
 
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, cleaned);
-      const user = auth.currentUser;
-      if (user) {
-        await updateDoc(doc(db, 'users', user.uid), { saldo: valueInReais });
-        setSaldo(valueInReais);
-      }
+      const listRef = doc(db, 'lists', listId);
+      await updateDoc(listRef, { saldo: valueInReais });
     } catch (err) {
-      setError("Erro ao salvar saldo");
-      console.error(err);
+      console.error("Erro ao salvar saldo:", err);
     }
   };
 
@@ -65,12 +53,5 @@ export default function useSaldo() {
     }).format(valueInCents / 100);
   };
 
-  return {
-    saldo,
-    rawSaldo,
-    loading,
-    error,
-    handleSaldoChange,
-    formatToBRL
-  };
+  return { rawSaldo, loading, handleSaldoChange, formatToBRL };
 }

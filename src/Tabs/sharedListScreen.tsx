@@ -11,24 +11,26 @@ export default function SharedListsScreen() {
     const [sharedLists, setSharedLists] = useState([]);
     const navigation = useNavigation();
 
-    const fetchSharedLists = () => {
-        const user = auth.currentUser;
-        if (!user) return;
+const fetchSharedLists = () => {
+    const user = auth.currentUser;
+    if (!user || !user.email) return;
 
-        const userListsRef = collection(db, 'lists');
-        const q = query(userListsRef, where('sharedWith', 'array-contains', user.email)); 
+    const userListsRef = collection(db, 'lists');
+    
+    // Busca listas onde seu e-mail está, mas filtramos o dono no código
+    const q = query(userListsRef, where('sharedWith', 'array-contains', user.email.toLowerCase())); 
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const lists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const lists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-     
-            const filteredLists = lists.filter(list => list.sharedWith.length > 1);
+        // FILTRO: Só mostra listas onde o ownerId é DIFERENTE do seu UID
+        const onlySharedWithMe = lists.filter(list => list.ownerId !== user.uid);
 
-            setSharedLists(filteredLists);
-        });
+        setSharedLists(onlySharedWithMe);
+    });
 
-        return unsubscribe;
-    };
+    return unsubscribe;
+};
 
     useEffect(() => {
         const unsubscribe = fetchSharedLists();
@@ -86,7 +88,7 @@ export default function SharedListsScreen() {
             <Text
                 fontSize="xl"
                 color="white"
-                onPress={() => handleListPress(item.name)} 
+              onPress={() => handleListPress(item.id, item.name)}
             >
                 {item.name}
             </Text>
@@ -105,8 +107,8 @@ export default function SharedListsScreen() {
         </Box>
     );
 
-    const handleListPress = (listName) => {
-        navigation.navigate('ListScreen', { listName });
+    const handleListPress = (listId, listName ) => {
+        navigation.navigate('ListScreen', { listId, listName });
     };
 
     const handleBack = () => {

@@ -4,32 +4,26 @@ import { HStack, Box, Text, Icon, Spinner } from 'native-base';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useSaldo from '../hooks/useSaldo';
 
-export default function Balance({ total }) {
+interface BalanceProps {
+  total: number;
+  listId: string;
+}
+
+export default function Balance({ total, listId }: BalanceProps) {
   const {
-    saldo,
     rawSaldo,
-    loading,
-    error,
+    loading,         // Certifique-se que o hook useSaldo retorna isso
+    error,           // Certifique-se que o hook useSaldo retorna isso
     handleSaldoChange,
     formatToBRL,
-  } = useSaldo();
+  } = useSaldo(listId);
 
-  const validTotal = !isNaN(total) ? total : 0;
+  // Cálculo preciso em centavos para evitar erros de ponto flutuante
+  const totalEmCentavos = Math.round((total || 0) * 100);
+  const saldoUsuarioCentavos = parseInt(rawSaldo || '0', 10);
 
-  const saldoEmCentavos = parseInt(rawSaldo || '0');
-  const totalEmCentavos = parseInt((validTotal * 100).toFixed(0));
-
-  // Calcula a diferença
-  const diferenca = saldoEmCentavos - totalEmCentavos;
-
-  
-  const saldoFormatado = diferenca < 0
-    ? formatToBRL(0)
-    : formatToBRL(diferenca);
-
-  const saldoNegativo = diferenca < 0
-    ? formatToBRL(Math.abs(diferenca))
-    : null;
+  const diferenca = saldoUsuarioCentavos - totalEmCentavos;
+  const saldoNegativo = diferenca < 0;
 
   return (
     <HStack
@@ -43,31 +37,42 @@ export default function Balance({ total }) {
       shadow={2}
     >
       <HStack space={3} alignItems="center">
-        <Icon as={MaterialCommunityIcons} name="wallet" size="md" color="green.300" />
-        <Text color="white" fontSize="md" fontWeight="bold">
-          Meu Saldo
-        </Text>
+        <Icon
+          as={MaterialCommunityIcons}
+          name="wallet"
+          size="md"
+          color="green.300"
+        />
+
         <Box>
+          <Text color="gray.400" fontSize="xs" fontWeight="bold">
+            MEU SALDO
+          </Text>
+
           <TextInput
             keyboardType="numeric"
-            value={saldoFormatado}
+            value={formatToBRL(saldoUsuarioCentavos)}
             onChangeText={handleSaldoChange}
             style={{
-              color: "white",
+              color: 'white',
               borderBottomWidth: 1,
-              borderBottomColor: "#22c55e",
-              minWidth: 80,
-              paddingBottom: 2,
-              fontSize: 16,
-              fontWeight: '500',
+              borderBottomColor: '#22c55e',
+              minWidth: 100,
+              fontSize: 18,
+              fontWeight: 'bold',
             }}
-            placeholder="R$ 0,00"
-            placeholderTextColor="gray"
           />
+
           {saldoNegativo && (
-            <Text color="red.400" fontSize="sm" mt={1}>
-              -{saldoNegativo}
+            <Text color="red.400" fontSize="xs" mt={1}>
+              Falta: {formatToBRL(Math.abs(diferenca))}
             </Text>
+          )}
+          
+          {!saldoNegativo && saldoUsuarioCentavos > 0 && (
+             <Text color="green.400" fontSize="xs" mt={1}>
+               Sobra: {formatToBRL(diferenca)}
+             </Text>
           )}
         </Box>
       </HStack>
@@ -77,14 +82,14 @@ export default function Balance({ total }) {
       ) : error ? (
         <Text color="red.500">Erro</Text>
       ) : (
-        <HStack space={2} alignItems="center">
-          <Text color="white" fontSize="md" fontWeight="bold">
-            Total
+        <Box alignItems="flex-end">
+          <Text color="gray.400" fontSize="xs" fontWeight="bold">
+            TOTAL
           </Text>
-          <Text color="green.300" fontSize="md" fontWeight="bold">
+          <Text color="green.300" fontSize="lg" fontWeight="bold">
             {formatToBRL(totalEmCentavos)}
           </Text>
-        </HStack>
+        </Box>
       )}
     </HStack>
   );

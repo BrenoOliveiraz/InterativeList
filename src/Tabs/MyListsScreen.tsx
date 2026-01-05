@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { VStack, Box, Button, Text, Icon, IconButton, Menu, Pressable } from 'native-base';
+import { VStack, Box, Button, Text, Icon, IconButton, Menu, Pressable, Progress, HStack } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Alert as RNAlert } from 'react-native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -21,6 +21,13 @@ export default function MyListsScreen() {
             }
         };
     }, []);
+
+    // NOVO: Função para calcular a porcentagem de conclusão
+    const calculateProgress = (items) => {
+        if (!items || items.length === 0) return 0;
+        const selectedCount = items.filter(item => item.selected).length;
+        return (selectedCount / items.length) * 100;
+    };
 
     const handleDragEnd = async ({ data }) => {
         setUserLists(data);
@@ -46,8 +53,8 @@ export default function MyListsScreen() {
         navigation.navigate('AddList');
     };
 
-    const handleListPress = (listName) => {
-        navigation.navigate('ListScreen', { listName });
+    const handleListPress = (listId, listName) => {
+        navigation.navigate('ListScreen', { listId, listName });
     };
 
     const handleLogout = async () => {
@@ -59,62 +66,98 @@ export default function MyListsScreen() {
         }
     };
 
-    const renderItem = ({ item, drag }) => (
-        <Box
-            key={item.id}
-            p={4}
-            bg="gray.800"
-            borderRadius="2xl"
-            mb={3}
-            shadow={3}
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="space-between"
-        >
-            <Text
-                fontSize="lg"
-                color="white"
-                fontWeight="medium"
-                onLongPress={drag}
-                onPress={() => handleListPress(item.name)}
-            >
-                {item.name}
-            </Text>
+    const renderItem = ({ item, drag }) => {
+        // MODIFICADO: Cálculo do progresso e contagem de itens
+        const progressValue = calculateProgress(item.items);
+        const totalItems = item.items?.length || 0;
+        const checkedItems = item.items?.filter(i => i.selected).length || 0;
 
-            <Menu
-                w="40"
-                borderRadius="md"
-                bg="gray.700"
-                _item={{ _text: { color: 'white' } }}
-                trigger={(triggerProps) => (
-                    <Pressable {...triggerProps}>
-                        <Icon
-                            as={<MaterialCommunityIcons name="dots-vertical" />}
-                            size="lg"
-                            color="gray.300"
-                        />
-                    </Pressable>
-                )}
+        return (
+            <Box
+                p={4}
+                bg="gray.800"
+                borderRadius="2xl"
+                mb={3}
+                shadow={3}
             >
-                <Menu.Item onPress={() => handleRemoveItem(item.id)}>Remover Lista</Menu.Item>
-                <Menu.Item onPress={() => handleOpenMenu(item.id)}>Compartilhar</Menu.Item>
-            </Menu>
-        </Box>
-    );
+                {/* MODIFICADO: VStack para empilhar Título e Barra de Progresso */}
+                <VStack space={3}>
+                    <HStack alignItems="center" justifyContent="space-between">
+                        <Pressable 
+                            flex={1} 
+                            onLongPress={drag} 
+                            onPress={() => handleListPress(item.id, item.name)}
+                        >
+                            <Text
+                                fontSize="lg"
+                                color="white"
+                                fontWeight="medium"
+                            >
+                                {item.name}
+                            </Text>
+                        </Pressable>
+
+                        <Menu
+                            w="40"
+                            borderRadius="md"
+                            bg="white"
+                            _item={{ _text: { color: 'white' } }}
+                            trigger={(triggerProps) => (
+                                <Pressable {...triggerProps}>
+                                    <Icon
+                                        as={<MaterialCommunityIcons name="dots-vertical" />}
+                                        size="lg"
+                                        color="gray.300"
+                                    />
+                                </Pressable>
+                            )}
+                        >
+                            <Menu.Item onPress={() => handleRemoveItem(item.id)}>
+                                Remover Lista
+                            </Menu.Item>
+                            <Menu.Item onPress={() => handleOpenMenu(item.id)}>
+                                Compartilhar
+                            </Menu.Item>
+                        </Menu>
+                    </HStack>
+
+                    {/* NOVO: Seção da Barra de Progresso */}
+                    {totalItems > 0 && (
+                        <VStack space={1}>
+                            <Progress 
+                                value={progressValue} 
+                                colorScheme={progressValue === 100 ? "green" : "cyan"} 
+                                bg="gray.700"
+                                size="xs" 
+                                borderRadius="full"
+                            />
+                            <HStack justifyContent="space-between" alignItems="center">
+                                <Text fontSize="xs" color="gray.400">
+                                    {Math.round(progressValue)}% concluído
+                                </Text>
+                                <Text fontSize="xs" color="gray.400">
+                                    {checkedItems}/{totalItems} itens
+                                </Text>
+                            </HStack>
+                        </VStack>
+                    )}
+                </VStack>
+            </Box>
+        );
+    };
 
     return (
         <VStack flex={1} px={5} pt={10} bg="gray.900" space={4}>
-      
             <Box flexDirection="row" justifyContent="space-between" alignItems="center">
                 <Title color="white">Minhas Listas</Title>
                 <IconButton
                     icon={<MaterialCommunityIcons name="logout" size={24} color="white" />}
                     onPress={handleLogout}
-                    _icon={{ color: 'white' }}
+                    variant="ghost"
+                    _pressed={{ bg: 'gray.800' }}
                 />
             </Box>
 
-         
             {userLists.length > 0 ? (
                 <DraggableFlatList
                     data={userLists}
@@ -129,7 +172,6 @@ export default function MyListsScreen() {
                 </VStack>
             )}
 
-          
             <Box pb={5}>
                 <Button
                     onPress={handleAddList}

@@ -1,10 +1,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; 
-
+import MyListsScreen from './MyListsScreen';
 import SharedListsScreen from './sharedListScreen';
-import Perfil from './perfil';
-import MyListsScreen from './myListsScreen';
+import ProfileScreen from './perfil';
+
+
 
 
 const Tab = createBottomTabNavigator();
@@ -45,7 +46,7 @@ export default function Tabs() {
       />
       <Tab.Screen
         name="Perfil"
-        component={Perfil}
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" color={color} size={size} /> 
